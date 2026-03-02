@@ -1,0 +1,29 @@
+/* Settings Page Styles */
+
+.settings-tab {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.settings-tab:hover {
+    background-color: #f3f4f6;
+}
+
+.settings-tab.active {
+    background-color: #eef2ff;
+}
+
+.settings-content {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
