@@ -85,6 +85,10 @@
             
             <div class="bg-gray-50 px-8 py-4 text-center text-sm text-gray-600">
                 <p>Demo Credentials:<br><strong>username:</strong> admin <br><strong>password:</strong> password123</p>
+                <hr class="my-3">
+                <p><a href="login_debug.php" class="text-indigo-600 hover:text-indigo-700 font-semibold">
+                    <i class="fas fa-bug mr-1"></i> Having trouble? Click here to troubleshoot
+                </a></p>
             </div>
         </div>
     </div>
@@ -96,30 +100,39 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('errorMessage');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            // Disable button while processing
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
             
             try {
+                const formData = new FormData();
+                formData.append('username', username);
+                formData.append('password', password);
+                
                 const response = await fetch('./api/login.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password)
+                    body: formData
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Store token and redirect
-                    localStorage.setItem('auth_token', data.token);
-                          window.location.href = './dashboard.php';
+                    // Redirect to dashboard
+                    window.location.href = './dashboard.php';
                 } else {
                     document.getElementById('errorText').textContent = data.message || 'Login failed';
                     errorDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
                 }
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('errorText').textContent = 'Network error. Please try again.';
+                document.getElementById('errorText').textContent = 'Network error: ' + error.message + '. Make sure database is running.';
                 errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
             }
         });
     </script>

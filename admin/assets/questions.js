@@ -9,13 +9,13 @@ let deleteId = null;
 // Load all questions
 async function loadQuestions() {
     try {
-        const data = await apiRequest('./api/questions.php?action=list');
+        const data = await apiRequest('questions.php?action=list');
         
         if (!data.success) {
             throw new Error(data.message || 'Failed to load questions');
         }
         
-        questions = data.data || [];
+        questions = data.data.questions || [];
         renderQuestions();
     } catch (error) {
         handleError('Failed to load questions: ' + error.message);
@@ -47,7 +47,7 @@ function renderQuestions() {
                     <div class="flex items-center gap-2">
                         <i class="drag-handle fas fa-grip-vertical text-gray-400"></i>
                         <h3 class="text-lg font-semibold text-gray-900">
-                            ${index + 1}. ${escapeHtml(q.question_text)}
+                            ${index + 1}. ${escapeHtml(q.question)}
                         </h3>
                     </div>
                 </div>
@@ -97,10 +97,10 @@ async function saveQuestion(e) {
     const formData = new FormData();
     if (id) formData.append('id', id);
     formData.append('action', id ? 'update' : 'create');
-    formData.append('question_text', questionText);
+    formData.append('question', questionText);
     formData.append('question_type', questionType);
-    formData.append('category', category);
-    if (required) formData.append('required', '1');
+    formData.append('category_id', category);
+    if (required) formData.append('is_required', '1');
 
     // Add options if applicable
     if (['rating', 'select', 'checkbox'].includes(questionType)) {
@@ -115,7 +115,7 @@ async function saveQuestion(e) {
         const button = event.submitter;
         setLoading(button, true);
         
-        const response = await fetch('./api/questions.php', {
+        const response = await fetch('/admin/api/questions.php', {
             method: 'POST',
             body: formData
         });
@@ -142,7 +142,7 @@ async function saveQuestion(e) {
 // Edit question
 async function editQuestion(id) {
     try {
-        const response = await fetch(`./api/questions.php?action=get&id=${id}`);
+        const response = await fetch(`/admin/api/questions.php?action=get&id=${id}`);
         const text = await response.text();
         
         let data;
@@ -158,7 +158,7 @@ async function editQuestion(id) {
         currentEditId = id;
 
         document.getElementById('questionId').value = id;
-        document.getElementById('questionText').value = q.question_text;
+        document.getElementById('questionText').value = q.question;
         document.getElementById('questionType').value = q.question_type;
         document.getElementById('category').value = q.category || '';
         document.getElementById('required').checked = q.required;
@@ -187,7 +187,7 @@ async function deleteQuestion(id) {
         formData.append('action', 'delete');
         formData.append('id', id);
 
-        const response = await fetch('./api/questions.php', {
+        const response = await fetch('/admin/api/questions.php', {
             method: 'POST',
             body: formData
         });
@@ -479,7 +479,7 @@ async function processBatchImport(e) {
         try {
             const formData = new FormData();
             formData.append('action', 'create');
-            formData.append('question_text', q.text);
+            formData.append('question', q.text);
             formData.append('question_type', q.type);
             formData.append('category', q.category);
             if (q.required) formData.append('required', '1');
@@ -489,7 +489,7 @@ async function processBatchImport(e) {
                 formData.append('options', JSON.stringify(q.options));
             }
             
-            const response = await fetch('./api/questions.php', {
+            const response = await fetch('/admin/api/questions.php', {
                 method: 'POST',
                 body: formData
             });

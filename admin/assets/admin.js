@@ -1,68 +1,198 @@
 /**
- * Admin Global JavaScript Utilities
+ * Admin Panel - Unified JavaScript Module
+ * Provides global utilities, API helpers, and UI functions
  */
 
-// Toast notification system
-function showToast(message, type = 'success', duration = 3000) {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
-    `;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, duration);
-}
+class AdminPanel {
+    constructor() {
+        this.apiBase = '/admin/api';
+        this.init();
+    }
 
-// Show success toast
-function showSuccess(message) {
-    showToast(message, 'success', 3000);
-}
+    init() {
+        console.log('✓ Admin Panel Initialized');
+        this.setupEventListeners();
+    }
 
-// Show error toast
-function showError(message) {
-    showToast(message, 'error', 5000);
-}
+    setupEventListeners() {
+        // Add any global event listeners here
+        document.addEventListener('DOMContentLoaded', () => {
+            this.initializeComponents();
+        });
+    }
 
-// Show warning toast
-function showWarning(message) {
-    showToast(message, 'warning', 4000);
-}
+    initializeComponents() {
+        // Initialize tooltips, popovers, or other components
+        console.log('✓ Components Initialized');
+    }
 
-// API request helper
-async function apiRequest(url, options = {}) {
-    try {
-        const response = await fetch(url, {
-            ...options,
+    /**
+     * Make API request with error handling
+     */
+    async apiRequest(endpoint, options = {}) {
+        const url = `${this.apiBase}/${endpoint}`;
+        const config = {
+            method: options.method || 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
-            }
-        });
-        
-        const text = await response.text();
-        let data;
-        
+            },
+            ...options
+        };
+
+        if (config.body && typeof config.body === 'object') {
+            config.body = JSON.stringify(config.body);
+        }
+
         try {
-            data = JSON.parse(text);
-        } catch (e) {
-            console.error('Invalid JSON response:', text);
-            throw new Error('Invalid server response');
+            const response = await fetch(url, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || `HTTP ${response.status}`);
+            }
+
+            return { success: true, data };
+        } catch (error) {
+            console.error('API Error:', error);
+            this.showError(error.message);
+            return { success: false, error: error.message };
         }
-        
-        if (!response.ok && !data.success) {
-            throw new Error(data.message || `HTTP ${response.status}`);
-        }
-        
-        return data;
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
+    }
+
+    /**
+     * Show success notification
+     */
+    showSuccess(message, duration = 3000) {
+        this.showNotification(message, 'success', duration);
+    }
+
+    /**
+     * Show error notification
+     */
+    showError(message, duration = 4000) {
+        this.showNotification(message, 'error', duration);
+    }
+
+    /**
+     * Show warning notification
+     */
+    showWarning(message, duration = 3500) {
+        this.showNotification(message, 'warning', duration);
+    }
+
+    /**
+     * Generic notification system
+     */
+    showNotification(message, type = 'info', duration = 3000) {
+        const icons = {
+            success: 'check-circle',
+            error: 'exclamation-circle',
+            warning: 'exclamation-triangle',
+            info: 'info-circle'
+        };
+
+        const colors = {
+            success: 'from-green-400 to-green-600',
+            error: 'from-red-400 to-red-600',
+            warning: 'from-yellow-400 to-yellow-600',
+            info: 'from-blue-400 to-blue-600'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-6 right-6 bg-gradient-to-r ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3 animate-fade-in`;
+        toast.innerHTML = `
+            <i class="fas fa-${icons[type]}"></i>
+            <span>${message}</span>
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+
+    /**
+     * Format date to readable string
+     */
+    formatDate(dateString) {
+        return new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(new Date(dateString));
+    }
+
+    /**
+     * Format number with thousand separator
+     */
+    formatNumber(number) {
+        return Number(number).toLocaleString('en-US');
+    }
+
+    /**
+     * Copy text to clipboard
+     */
+    copyToClipboard(text) {
+        navigator.clipboard.writeText(text)
+            .then(() => this.showSuccess('Copied to clipboard!', 2000))
+            .catch(() => this.showError('Failed to copy'));
+    }
+
+    /**
+     * Confirm action with modal
+     */
+    confirm(message) {
+        return window.confirm(message);
+    }
+
+    /**
+     * Prompt user for input
+     */
+    prompt(message, defaultValue = '') {
+        return window.prompt(message, defaultValue);
     }
 }
+
+// Create global admin instance
+const adminPanel = new AdminPanel();
+
+// Backward compatibility functions
+function showToast(message, type = 'success', duration = 3000) {
+    adminPanel.showNotification(message, type, duration);
+}
+
+function showSuccess(message) {
+    adminPanel.showSuccess(message);
+}
+
+function showError(message) {
+    adminPanel.showError(message);
+}
+
+function showWarning(message) {
+    adminPanel.showWarning(message);
+}
+
+function formatTime(dateString) {
+    adminPanel.formatDate(dateString);
+}
+
+// Expose to window for global access
+window.AdminPanel = adminPanel;
+window.showToast = showToast;
+window.showSuccess = showSuccess;
+window.showError = showError;
+window.showWarning = showWarning;
+window.formatTime = formatTime;
+
+// Expose apiRequest globally for backward compatibility
+const apiRequest = adminPanel.apiRequest.bind(adminPanel);
 
 // Hide/show loading state
 function setLoading(element, isLoading) {

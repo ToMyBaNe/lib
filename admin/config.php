@@ -1,42 +1,52 @@
 <?php
 /**
- * Admin Configuration & Initialization
+ * Admin Panel Configuration & Authentication
+ * Centralized auth, session management, and configuration
  */
 
-// Start session if not already started
+// Start session - MUST be first
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Define admin pages
-$pages = [
+// Database connection
+require_once dirname(__FILE__) . '/../api/db_config.php';
+
+// Admin navigation menu
+$adminPages = [
     [
         'name' => 'Dashboard',
         'icon' => 'fas fa-chart-line',
         'file' => 'dashboard.php',
-        'path' => './dashboard.php'
+        'url' => './dashboard.php',
+        'permission' => 'view_dashboard'
     ],
     [
         'name' => 'Manage Questions',
         'icon' => 'fas fa-question-circle',
         'file' => 'manage_questions.php',
-        'path' => './manage_questions.php'
+        'url' => './manage_questions.php',
+        'permission' => 'manage_questions'
     ],
     [
         'name' => 'Survey Responses',
         'icon' => 'fas fa-comments',
         'file' => 'responses.php',
-        'path' => './responses.php'
+        'url' => './responses.php',
+        'permission' => 'view_responses'
     ],
     [
         'name' => 'Settings',
         'icon' => 'fas fa-cog',
         'file' => 'settings.php',
-        'path' => './settings.php'
+        'url' => './settings.php',
+        'permission' => 'manage_settings'
     ]
 ];
 
-// Check authentication
+/**
+ * Verify admin is logged in and authorized
+ */
 function requireAdminAuth() {
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
         header('Location: ' . dirname($_SERVER['PHP_SELF']) . '/login.php');

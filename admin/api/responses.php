@@ -1,94 +1,42 @@
 <?php
 /**
- * Admin API for Survey Responses
+ * Admin API - Survey Responses Management
+ * Handles fetching, filtering, exporting responses and analytics
  */
 
 session_start();
-ob_start();
-
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
-
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
-// Check admin authentication
+// Authentication check
 if (!isset($_SESSION['user_id'])) {
-    ob_end_clean();
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized - Please log in']);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
 
-// Load database config
-if (!file_exists('../../api/db_config.php')) {
-    ob_end_clean();
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database config not found']);
-    exit;
-}
-
+// Include database configuration
 require_once '../../api/db_config.php';
 
-// Verify connection
-if (!isset($conn) || !$conn) {
-    ob_end_clean();
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit;
-}
-
-// Check if survey_responses table exists
-$tableCheck = $conn->query("SHOW TABLES LIKE 'survey_responses'");
-if (!$tableCheck || $tableCheck->num_rows == 0) {
-    ob_end_clean();
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Survey responses table not found',
-        'setup_url' => '../setup_responses.php'
-    ]);
-    exit;
-}
-
-// Custom error handler to catch PHP errors/warnings
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
-    ob_end_clean();
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Server error: ' . $errstr,
-        'error' => [
-            'file' => $errfile,
-            'line' => $errline
-        ]
-    ]);
-    exit;
-});
+$action = $_GET['action'] ?? '';
+$method = $_SERVER['REQUEST_METHOD'];
 
 try {
-    $action = $_GET['action'] ?? $_POST['action'] ?? 'list';
-
-    switch($action) {
-        case 'list':
+    if ($method === 'GET') {
+        if ($action === 'list' || empty($action)) {
             listResponses();
-            break;
-        case 'get':
-            getResponse();
-            break;
-        case 'delete':
-            deleteResponse();
-            break;
-        case 'export':
+        } elseif ($action === 'get') {
+            getResponse($_GET['id'] ?? 0);
+        } elseif ($action === 'analytics') {
+            getAnalytics();
+        } elseif ($action === 'export') {
             exportResponses();
-            break;
-        default:
-            throw new Exception('Invalid action');
+        }
+    } elseif ($method === 'DELETE') {
+        deleteResponse($_GET['id'] ?? 0);
+    } else {
+        throw new Exception('Invalid request method');
     }
-
-} catch(Exception $e) {
-    ob_end_clean();
+} catch (Exception $e) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
@@ -97,102 +45,97 @@ try {
     exit;
 }
 
+/**
+ * List all responses with pagination and filtering
+ */
 function listResponses() {
     global $conn;
-
-    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 50;
-    $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
-    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-    $filter_date = isset($_GET['date']) ? trim($_GET['date']) : '';
-
-    // Build query
+    
+    $page = max(1, (int)($_GET['page'] ?? 1));
+    $limit = min(100, max(10, (int)($_GET['limit'] ?? 50)));
+    $offset = ($page - 1) * $limit;
+    $search = trim($_GET['search'] ?? '');
+    $date_from = trim($_GET['date_from'] ?? '');
+    $date_to = trim($_GET['date_to'] ?? '');
+    
+    // Build WHERE clause
     $where = "1=1";
     $params = [];
     $types = "";
-
+    
     if (!empty($search)) {
-        $where .= " AND (visitor_email LIKE ? OR visitor_name LIKE ?)";
-        $params[] = "%$search%";
-        $params[] = "%$search%";
+        $where .= " AND (visitor_name LIKE ? OR visitor_email LIKE ?)";
+        $search_term = "%$search%";
+        $params[] = $search_term;
+        $params[] = $search_term;
         $types .= "ss";
     }
-
-    if (!empty($filter_date)) {
-        $where .= " AND DATE(created_at) = ?";
-        $params[] = $filter_date;
+    
+    if (!empty($date_from)) {
+        $where .= " AND DATE(created_at) >= ?";
+        $params[] = $date_from;
         $types .= "s";
     }
-
+    
+    if (!empty($date_to)) {
+        $where .= " AND DATE(created_at) <= ?";
+        $params[] = $date_to;
+        $types .= "s";
+    }
+    
     // Get total count
-    $countStmt = $conn->prepare("SELECT COUNT(*) as total FROM survey_responses WHERE $where");
-    if ($types && !empty($params)) {
+    $countQuery = "SELECT COUNT(*) as total FROM survey_responses WHERE $where";
+    $countStmt = $conn->prepare($countQuery);
+    if ($types && count($params) < 10) { // Avoid bind issues
         $countStmt->bind_param($types, ...$params);
     }
-    if (!$countStmt->execute()) {
-        throw new Exception("Query failed: " . $countStmt->error);
-    }
-    $countResult = $countStmt->get_result();
-    $countRow = $countResult->fetch_assoc();
-    $totalRows = $countRow ? $countRow['total'] : 0;
+    $countStmt->execute();
+    $countRow = $countStmt->get_result()->fetch_assoc();
+    $total = $countRow['total'] ?? 0;
     $countStmt->close();
-
-    // Get responses - add pagination params to array
+    
+    // Get responses
+    $query = "SELECT id, visitor_name, visitor_email, visit_frequency, purpose, created_at 
+              FROM survey_responses 
+              WHERE $where 
+              ORDER BY created_at DESC 
+              LIMIT ? OFFSET ?";
+    
+    $stmt = $conn->prepare($query);
     $params[] = $limit;
     $params[] = $offset;
     $types .= "ii";
-
-    // Use simple query without responses_data (will be merged when viewing detail)
-    $stmt = $conn->prepare("
-        SELECT id, visitor_email, visitor_name, created_at
-        FROM survey_responses
-        WHERE $where
-        ORDER BY created_at DESC
-        LIMIT ? OFFSET ?
-    ");
     
-    if (!$stmt) {
-        throw new Exception("Prepare failed: " . $conn->error);
-    }
-
-    if ($types && !empty($params)) {
-        if (!$stmt->bind_param($types, ...$params)) {
-            throw new Exception("Bind param failed: " . $stmt->error);
-        }
-    }
-
-    if (!$stmt->execute()) {
-        throw new Exception("Execute failed: " . $stmt->error);
-    }
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
     $result = $stmt->get_result();
+    
     $responses = [];
-
-    while($row = $result->fetch_assoc()) {
-        $responses[] = [
-            'id' => $row['id'],
-            'email' => $row['visitor_email'],
-            'visitor_name' => $row['visitor_name'],
-            'submitted_at' => $row['created_at'],
-            'answer_count' => 4  // Basic fields count
-        ];
+    while ($row = $result->fetch_assoc()) {
+        $responses[] = $row;
     }
-
-    $stmt->close();
-
-    ob_end_clean();
+    
+    http_response_code(200);
     echo json_encode([
         'success' => true,
-        'data' => $responses,
-        'total' => $totalRows,
-        'limit' => $limit,
-        'offset' => $offset
+        'responses' => $responses,
+        'pagination' => [
+            'page' => $page,
+            'limit' => $limit,
+            'total' => $total,
+            'pages' => ceil($total / $limit)
+        ]
     ]);
-    exit;
+    $stmt->close();
 }
 
-function getResponse() {
+/**
+ * Get single response details
+ */
+function getResponse($id) {
     global $conn;
 
-    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $id = isset($id) ? (int)$id : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
 
     if (!$id) {
         throw new Exception('Response ID is required');
@@ -265,10 +208,10 @@ function getResponse() {
     exit;
 }
 
-function deleteResponse() {
+function deleteResponse($id) {
     global $conn;
 
-    $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+    $id = isset($id) ? (int)$id : (isset($_POST['id']) ? (int)$_POST['id'] : 0);
 
     if (!$id) {
         throw new Exception('Response ID is required');
@@ -385,4 +328,48 @@ function exportResponses() {
     $stmt->close();
     exit;
 }
-?>
+
+/**
+ * Get analytics data
+ */
+function getAnalytics() {
+    global $conn;
+    
+    // Total responses
+    $totalResult = $conn->query("SELECT COUNT(*) as total FROM survey_responses");
+    $total = $totalResult->fetch_assoc()['total'];
+    
+    // Today's responses
+    $todayResult = $conn->query("SELECT COUNT(*) as count FROM survey_responses WHERE DATE(created_at) = CURDATE()");
+    $today = $todayResult->fetch_assoc()['count'];
+    
+    // This week
+    $weekResult = $conn->query("SELECT COUNT(*) as count FROM survey_responses WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)");
+    $week = $weekResult->fetch_assoc()['count'];
+    
+    // Visit frequency breakdown
+    $frequencyResult = $conn->query("SELECT visit_frequency, COUNT(*) as count FROM survey_responses GROUP BY visit_frequency");
+    $frequency = [];
+    while ($row = $frequencyResult->fetch_assoc()) {
+        $frequency[] = $row;
+    }
+    
+    // Purpose breakdown
+    $purposeResult = $conn->query("SELECT purpose, COUNT(*) as count FROM survey_responses GROUP BY purpose");
+    $purpose = [];
+    while ($row = $purposeResult->fetch_assoc()) {
+        $purpose[] = $row;
+    }
+    
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'analytics' => [
+            'total_responses' => $total,
+            'today_responses' => $today,
+            'week_responses' => $week,
+            'visit_frequency' => $frequency,
+            'purpose_breakdown' => $purpose
+        ]
+    ]);
+}

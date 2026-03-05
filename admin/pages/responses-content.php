@@ -116,7 +116,7 @@
         async loadResponses() {
             try {
                 const offset = this.currentPage * this.pageSize;
-                let url = `./api/responses.php?action=list&limit=${this.pageSize}&offset=${offset}`;
+                let url = `responses.php?action=list&limit=${this.pageSize}&offset=${offset}`;
                 
                 if (this.filters.date) {
                     url += `&date=${encodeURIComponent(this.filters.date)}`;
@@ -195,7 +195,7 @@
                 formData.append('action', 'delete');
                 formData.append('id', id);
 
-                const response = await fetch('./api/responses.php', {
+                const response = await fetch('/admin/api/responses.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -441,7 +441,7 @@
 
     async function exportResponses() {
         const date = document.getElementById('filterDate').value;
-        let url = './api/responses.php?action=export';
+        let url = '/admin/api/responses.php?action=export';
         if (date) {
             url += `&date=${encodeURIComponent(date)}`;
         }
