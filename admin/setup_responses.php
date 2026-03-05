@@ -15,19 +15,38 @@ try {
     $tableCheck = $conn->query("SHOW TABLES LIKE 'survey_responses'");
     
     if ($tableCheck && $tableCheck->num_rows > 0) {
-        $message = "✓ Survey Responses table already exists!";
+        // Check if we need to add missing columns
+        $columnCheck = $conn->query("SHOW COLUMNS FROM survey_responses");
+        $existingColumns = [];
+        while ($col = $columnCheck->fetch_assoc()) {
+            $existingColumns[$col['Field']] = true;
+        }
+        
+        $requiredColumns = ['visitor_name', 'visitor_email', 'visit_frequency', 'purpose', 'responses_data'];
+        $missingColumns = array_diff($requiredColumns, array_keys($existingColumns));
+        
+        if (!empty($missingColumns)) {
+            $message = "⚠ Survey Responses table exists but is missing columns: " . implode(', ', $missingColumns) . ". Please backup your data and run migration.";
+        } else {
+            $message = "✓ Survey Responses table already exists with all required columns!";
+        }
     } else {
-        // Table doesn't exist - create it
+        // Table doesn't exist - create it with proper schema
         $createTableSQL = "
         CREATE TABLE IF NOT EXISTS survey_responses (
             id INT PRIMARY KEY AUTO_INCREMENT,
-            email VARCHAR(255) NOT NULL,
-            user_id INT,
+            visitor_name VARCHAR(100) NOT NULL,
+            visitor_email VARCHAR(100),
+            visit_frequency VARCHAR(50),
+            purpose VARCHAR(255),
             responses_data JSON,
-            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            ip_address VARCHAR(45),
+            user_agent TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_email (email),
-            INDEX idx_submitted (submitted_at)
+            INDEX idx_response_date (created_at),
+            INDEX idx_visitor_email (visitor_email),
+            INDEX idx_visit_frequency (visit_frequency)
         )
         ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ";

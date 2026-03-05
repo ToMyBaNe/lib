@@ -1,4 +1,7 @@
 <?php
+// Start session BEFORE sending any headers
+session_start();
+
 header('Content-Type: application/json');
 require_once '../../api/db_config.php';
 
@@ -16,6 +19,12 @@ try {
         throw new Exception('Username and password are required');
     }
     
+    // Check if users table exists
+    $tableCheck = $conn->query("SHOW TABLES LIKE 'users'");
+    if (!$tableCheck || $tableCheck->num_rows === 0) {
+        throw new Exception('Users table not found. Please run database setup first.');
+    }
+    
     // Query user from database
     $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
     
@@ -24,7 +33,11 @@ try {
     }
     
     $stmt->bind_param('s', $username);
-    $stmt->execute();
+    
+    if (!$stmt->execute()) {
+        throw new Exception('Query failed: ' . $stmt->error);
+    }
+    
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
@@ -39,22 +52,17 @@ try {
         throw new Exception('Invalid username or password');
     }
     
-    // Generate simple token (in production, use JWT)
-    $token = bin2hex(random_bytes(32));
-    
-    // Store token in session
-    session_start();
+    // Store session data
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
-    $_SESSION['token'] = $token;
-    
-    $conn->close();
+    $_SESSION['login_time'] = time();
     
     http_response_code(200);
     echo json_encode([
         'success' => true,
         'message' => 'Login successful',
-        'token' => $token
+        'user_id' => $user['id'],
+        'username' => $user['username']
     ]);
     
 } catch (Exception $e) {

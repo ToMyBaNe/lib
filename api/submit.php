@@ -26,15 +26,29 @@ try {
         throw new Exception('No data provided');
     }
 
-    // Validate required fields
+    // Validate and sanitize input data
     $visitor_name = trim($data['visitor_name'] ?? '');
     $visitor_email = trim($data['visitor_email'] ?? '');
     $visit_frequency = trim($data['visit_frequency'] ?? '');
     $purpose = trim($data['purpose'] ?? '');
     $responses = $data['responses'] ?? [];
 
+    // Required field validation
     if (empty($visitor_name)) {
         throw new Exception('Visitor name is required');
+    }
+
+    if (strlen($visitor_name) > 100) {
+        throw new Exception('Visitor name must not exceed 100 characters');
+    }
+
+    if (!empty($visitor_email)) {
+        if (!filter_var($visitor_email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception('Please provide a valid email address');
+        }
+        if (strlen($visitor_email) > 100) {
+            throw new Exception('Email must not exceed 100 characters');
+        }
     }
 
     if (empty($visit_frequency)) {
@@ -45,10 +59,17 @@ try {
         throw new Exception('Purpose is required');
     }
 
+    // Get client IP address
+    $ip_address = $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
+    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+
     // Store responses as JSON
     $responses_json = json_encode($responses);
+    if ($responses_json === false) {
+        throw new Exception('Failed to encode response data');
+    }
 
-    // Prepare insert statement
+    // Prepare insert statement with additional metadata fields
     $stmt = $conn->prepare("
         INSERT INTO survey_responses (
             visitor_name, 
@@ -56,15 +77,16 @@ try {
             visit_frequency, 
             purpose,
             responses_data,
-            created_at
-        ) VALUES (?, ?, ?, ?, ?, NOW())
+            ip_address,
+            user_agent
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
 
-    $stmt->bind_param("sssss", $visitor_name, $visitor_email, $visit_frequency, $purpose, $responses_json);
+    $stmt->bind_param("sssssss", $visitor_name, $visitor_email, $visit_frequency, $purpose, $responses_json, $ip_address, $user_agent);
 
     if (!$stmt->execute()) {
         throw new Exception('Execute failed: ' . $stmt->error);
