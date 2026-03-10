@@ -156,14 +156,14 @@ async function editQuestion(id) {
 
         if (!data.success) throw new Error(data.message);
 
-        const q = data.data;
+        const q = data.question;
         currentEditId = id;
 
         document.getElementById('questionId').value = id;
         document.getElementById('questionText').value = q.question;
         document.getElementById('questionType').value = q.question_type;
-        document.getElementById('category').value = q.category || '';
-        document.getElementById('required').checked = q.required;
+        document.getElementById('category').value = q.category_name || '';
+        document.getElementById('required').checked = q.is_required;
 
         document.getElementById('modalTitle').textContent = 'Edit Question';
 
