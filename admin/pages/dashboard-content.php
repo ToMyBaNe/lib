@@ -196,7 +196,7 @@
 
     async function loadDashboardStats() {
         try {
-            const response = await fetch('../api/analytics.php');
+            const response = await fetch('./api/analytics.php');
             const text = await response.text();
             
             let data;
