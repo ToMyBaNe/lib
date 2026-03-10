@@ -11,3 +11,4 @@ $contentFile = './pages/dashboard-content.php';
 
 require_once './layouts/base.php';
 ?>
+    

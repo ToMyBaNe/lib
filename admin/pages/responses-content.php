@@ -1,21 +1,25 @@
+<?php
+if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'responses-content.php') {
+    header('Location: ../responses.php');
+    exit;
+}
+?>
 <!-- Survey Responses Page Content -->
 
 <div class="mb-6 flex justify-between items-center">
-    <h2 class="text-2xl font-bold text-gray-900">Survey Responses</h2>
-    <button onclick="exportResponses()" class="btn btn-primary">
+    <h2 class="text-lg font-semibold text-gray-900">Responses</h2>
+    <button type="button" onclick="exportResponses()" class="btn btn-primary">
         <i class="fas fa-download"></i> Export CSV
     </button>
 </div>
-
-<!-- Filter Section -->
-<div class="bg-white rounded-lg shadow p-6 mb-6">
+<div class="admin-card mb-6">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Date</label>
+            <label class="form-label">Filter by Date</label>
             <input type="date" id="filterDate" class="form-input">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Search by Email</label>
+            <label class="form-label">Search by Email</label>
             <input type="text" id="searchEmail" placeholder="email@example.com" class="form-input">
         </div>
         <div>
@@ -40,7 +44,7 @@
 </div>
 
 <!-- Responses Table -->
-<div id="responsesList" class="hidden bg-white rounded-lg shadow overflow-hidden">
+<div id="responsesList" class="hidden admin-card overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full">
             <thead class="bg-gray-50 border-b">

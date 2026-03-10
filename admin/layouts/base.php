@@ -17,6 +17,9 @@ requireAdminAuth();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) . ' - Admin' : 'Admin Panel'; ?></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/styles.css">
@@ -27,18 +30,18 @@ requireAdminAuth();
         <?php endforeach; ?>
     <?php endif; ?>
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
+<body class="admin-body">
+    <div class="admin-shell">
         <!-- Sidebar -->
         <?php require_once './components/sidebar.php'; ?>
         
         <!-- Main Content -->
-        <main class="flex-1 ml-64 overflow-auto flex flex-col">
+        <main class="admin-main">
             <!-- Header -->
             <?php require_once './components/header.php'; ?>
             
             <!-- Page Content -->
-            <div class="flex-1 p-8 overflow-auto">
+            <div class="admin-content">
                 <?php include $contentFile; ?>
             </div>
         </main>

@@ -141,13 +141,13 @@
             <i class="fas fa-rocket mr-2"></i> Quick Actions
         </h2>
         <div class="space-y-3">
-            <a href="manage_questions.php" class="block btn btn-primary">
+            <a href="./manage_questions.php" class="block btn btn-primary">
                 <i class="fas fa-plus mr-2"></i> Add New Question
             </a>
-            <a href="manage_questions.php" class="block btn btn-secondary">
+            <a href="./manage_questions.php" class="block btn btn-secondary">
                 <i class="fas fa-list mr-2"></i> View All Questions
             </a>
-            <a href="responses.php" class="block btn btn-secondary">
+            <a href="./responses.php" class="block btn btn-secondary">
                 <i class="fas fa-chart-bar mr-2"></i> View Responses
             </a>
         </div>
@@ -182,14 +182,21 @@
 <script>
     let recommendationChart = null;
 
-    // Load dashboard statistics
+    // Load dash    board statistics
     document.addEventListener('DOMContentLoaded', function() {
         loadDashboardStats();
     });
 
+    function escapeHtml(text) {
+        if (text == null) return '';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+
     async function loadDashboardStats() {
         try {
-            const response = await fetch('./api/analytics.php');
+            const response = await fetch('../api/analytics.php');
             const text = await response.text();
             
             let data;
@@ -211,18 +218,19 @@
             document.getElementById('totalResponses').textContent = analytics.total_responses;
             document.getElementById('totalQuestions').textContent = analytics.total_questions;
             document.getElementById('todayResponses').textContent = analytics.today_responses;
+            const satStats = analytics.satisfaction_stats || {};
             document.getElementById('avgSatisfaction').textContent = 
-                analytics.satisfaction_stats.count > 0 
-                    ? analytics.satisfaction_stats.average.toFixed(1) 
+                (satStats.count > 0 && satStats.average != null)
+                    ? Number(satStats.average).toFixed(1)
                     : '-';
 
             // Update recommendation rate
-            const recRate = analytics.recommendation_rate;
-            document.getElementById('recommendationPercentage').textContent = recRate.percentage + '%';
-            updateRecommendationChart(recRate.yes, recRate.no);
+            const recRate = analytics.recommendation_rate || {};
+            document.getElementById('recommendationPercentage').textContent = (recRate.percentage ?? 0) + '%';
+            updateRecommendationChart(recRate.yes ?? 0, recRate.no ?? 0);
 
             // Update ratings breakdown
-            const ratings = analytics.ratings_breakdown;
+            const ratings = analytics.ratings_breakdown || {};
             updateRatingsDisplay('book', ratings.book_availability);
             updateRatingsDisplay('staff', ratings.staff_helpfulness);
             updateRatingsDisplay('facilities', ratings.facilities_rating);
@@ -273,9 +281,12 @@
     }
 
     function updateRatingsDisplay(name, value) {
-        const percentage = (value / 5) * 100;
-        document.getElementById('rating-' + name).textContent = value.toFixed(1);
-        document.getElementById('rating-' + name + '-bar').style.width = percentage + '%';
+        const num = Number(value);
+        const percentage = isNaN(num) ? 0 : (num / 5) * 100;
+        const el = document.getElementById('rating-' + name);
+        const bar = document.getElementById('rating-' + name + '-bar');
+        if (el) el.textContent = isNaN(num) ? '-' : num.toFixed(1);
+        if (bar) bar.style.width = percentage + '%';
     }
 
     function updateVisitFrequencyList(frequencies) {
@@ -286,7 +297,7 @@
             return;
         }
 
-        const maxValue = Math.max(...frequencies.map(f => f.value));
+        const maxValue = Math.max(1, ...frequencies.map(f => f.value));
         list.innerHTML = frequencies.map(item => `
             <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-700">${escapeHtml(item.label)}</span>
@@ -308,7 +319,7 @@
             return;
         }
 
-        const maxValue = Math.max(...purposes.map(p => p.value));
+        const maxValue = Math.max(1, ...purposes.map(p => p.value));
         list.innerHTML = purposes.slice(0, 6).map(item => `
             <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-700 truncate">${escapeHtml(item.label)}</span>
