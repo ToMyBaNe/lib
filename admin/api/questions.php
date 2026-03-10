@@ -262,7 +262,18 @@ function updateQuestion($id) {
     $question_type = trim($_POST['question_type'] ?? 'text');
     $options = (isset($_POST['options']) && !empty($_POST['options'])) ? json_decode($_POST['options'], true) : [];
     $is_required = isset($_POST['is_required']) ? 1 : 0;
-    $is_active = isset($_POST['is_active']) ? 1 : 0;
+    
+    // Get existing question to preserve is_active status
+    $getStmt = $conn->prepare("SELECT is_active FROM survey_questions WHERE id = ?");
+    $getStmt->bind_param('i', $id);
+    $getStmt->execute();
+    $result = $getStmt->get_result();
+    if ($result->num_rows === 0) {
+        throw new Exception('Question not found');
+    }
+    $existingQuestion = $result->fetch_assoc();
+    $is_active = $existingQuestion['is_active']; // Preserve existing status
+    $getStmt->close();
     
     // Get or create category ID from name
     $category_id = getOrCreateCategory($categoryName);

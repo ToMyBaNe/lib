@@ -128,16 +128,23 @@ async function saveQuestion(e) {
         try {
             data = JSON.parse(text);
         } catch (e) {
+            setLoading(button, false);
             throw new Error('Invalid server response: ' + text.substring(0, 100));
         }
 
-        if (!data.success) throw new Error(data.message);
+        if (!data.success) {
+            setLoading(button, false);
+            throw new Error(data.message);
+        }
 
         showSuccess(id ? 'Question updated successfully' : 'Question created successfully');
         closeModal();
+        setLoading(button, false);
         await loadQuestions();
     } catch (error) {
         showError(error.message || 'Failed to save question');
+        const button = event.submitter;
+        if (button) setLoading(button, false);
     }
 }
 
@@ -251,6 +258,9 @@ function closeModal() {
     document.getElementById('questionForm').reset();
     document.getElementById('questionId').value = '';
     document.getElementById('modalTitle').textContent = 'Add Question';
+    document.getElementById('optionsInput').innerHTML = '';
+    document.getElementById('optionsContainer').classList.add('hidden');
+    document.getElementById('questionType').value = 'text';
     currentEditId = null;
 }
 
@@ -323,6 +333,8 @@ function openBatchModal() {
 
 function closeBatchModal() {
     document.getElementById('batchModal').classList.add('hidden');
+    document.getElementById('batchForm').reset();
+    document.getElementById('batchQuestionsContainer').innerHTML = '';
 }
 
 function addBatchQuestion() {
