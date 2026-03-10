@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
+    header('Location: ../manage_questions.php');
+    exit;
+}
+?>
 <!-- Questions Management Page Content -->
 
 <!-- Loading State -->

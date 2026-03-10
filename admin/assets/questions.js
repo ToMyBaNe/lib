@@ -115,7 +115,9 @@ async function saveQuestion(e) {
         const button = event.submitter;
         setLoading(button, true);
         
-        const response = await fetch('/admin/api/questions.php', {
+        const action = id ? 'update' : 'create';
+        const url = `/admin/api/questions.php?action=${action}` + (id ? `&id=${id}` : '');
+        const response = await fetch(url, {
             method: 'POST',
             body: formData
         });
@@ -183,13 +185,8 @@ async function editQuestion(id) {
 // Delete question
 async function deleteQuestion(id) {
     try {
-        const formData = new FormData();
-        formData.append('action', 'delete');
-        formData.append('id', id);
-
-        const response = await fetch('/admin/api/questions.php', {
-            method: 'POST',
-            body: formData
+        const response = await fetch(`/admin/api/questions.php?id=${id}`, {
+            method: 'DELETE'
         });
         
         const text = await response.text();
@@ -489,7 +486,7 @@ async function processBatchImport(e) {
                 formData.append('options', JSON.stringify(q.options));
             }
             
-            const response = await fetch('/admin/api/questions.php', {
+            const response = await fetch('/admin/api/questions.php?action=create', {
                 method: 'POST',
                 body: formData
             });

@@ -159,19 +159,55 @@ function getCategories() {
 }
 
 /**
+ * Get or create category by name
+ */
+function getOrCreateCategory($categoryName) {
+    global $conn;
+    
+    if (!$categoryName || empty(trim($categoryName))) {
+        return null;
+    }
+    
+    $categoryName = trim($categoryName);
+    
+    // Try to find existing category
+    $stmt = $conn->prepare("SELECT id FROM survey_categories WHERE category_name = ?");
+    $stmt->bind_param('s', $categoryName);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+    
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['id'];
+    }
+    
+    // If not found, create it
+    $displayOrder = 99;
+    $stmt = $conn->prepare("INSERT INTO survey_categories (category_name, display_order) VALUES (?, ?)");
+    $stmt->bind_param('si', $categoryName, $displayOrder);
+    $stmt->execute();
+    $newId = $stmt->insert_id;
+    $stmt->close();
+    
+    return $newId;
+}
+
+/**
  * Create new question
  */
 function createQuestion() {
     global $conn;
     
-    $data = json_decode(file_get_contents('php://input'), true);
+    $categoryName = $_POST['category_id'] ?? '';
+    $question = trim($_POST['question'] ?? '');
+    $question_type = trim($_POST['question_type'] ?? 'text');
+    $options = (isset($_POST['options']) && !empty($_POST['options'])) ? json_decode($_POST['options'], true) : [];
+    $is_required = isset($_POST['is_required']) ? 1 : 0;
+    $is_active = $_POST['is_active'] ?? 1;
     
-    $category_id = $data['category_id'] ?? null;
-    $question = trim($data['question'] ?? '');
-    $question_type = trim($data['question_type'] ?? 'text');
-    $options = $data['options'] ?? [];
-    $is_required = $data['is_required'] ? 1 : 0;
-    $is_active = $data['is_active'] ?? 1;
+    // Get or create category ID from name
+    $category_id = getOrCreateCategory($categoryName);
     
     if (empty($question)) {
         throw new Exception('Question text is required');
@@ -221,14 +257,15 @@ function updateQuestion($id) {
         throw new Exception('Question ID required');
     }
     
-    $data = json_decode(file_get_contents('php://input'), true);
+    $categoryName = $_POST['category_id'] ?? '';
+    $question = trim($_POST['question'] ?? '');
+    $question_type = trim($_POST['question_type'] ?? 'text');
+    $options = (isset($_POST['options']) && !empty($_POST['options'])) ? json_decode($_POST['options'], true) : [];
+    $is_required = isset($_POST['is_required']) ? 1 : 0;
+    $is_active = isset($_POST['is_active']) ? 1 : 0;
     
-    $category_id = $data['category_id'] ?? null;
-    $question = trim($data['question'] ?? '');
-    $question_type = trim($data['question_type'] ?? 'text');
-    $options = $data['options'] ?? [];
-    $is_required = $data['is_required'] ? 1 : 0;
-    $is_active = $data['is_active'] ? 1 : 0;
+    // Get or create category ID from name
+    $category_id = getOrCreateCategory($categoryName);
     
     if (empty($question)) {
         throw new Exception('Question text is required');
@@ -290,8 +327,8 @@ function deleteQuestion($id) {
 function reorderQuestions() {
     global $conn;
     
-    $data = json_decode(file_get_contents('php://input'), true);
-    $orders = $data['orders'] ?? [];
+    $data = $_POST['questions'] ? json_decode($_POST['questions'], true) : [];
+    $orders = $data['orders'] ?? $data ?? [];
     
     if (empty($orders)) {
         throw new Exception('No order data provided');

@@ -56,7 +56,7 @@ class AdminPanel {
         } catch (error) {
             console.error('API Error:', error);
             this.showError(error.message);
-            return { success: false, error: error.message };
+            return { success: false, message: error.message };
         }
     }
 
@@ -193,6 +193,7 @@ window.formatTime = formatTime;
 
 // Expose apiRequest globally for backward compatibility
 const apiRequest = adminPanel.apiRequest.bind(adminPanel);
+window.apiRequest = apiRequest;
 
 // Hide/show loading state
 function setLoading(element, isLoading) {

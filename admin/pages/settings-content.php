@@ -1,24 +1,30 @@
+<?php
+if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
+    header('Location: ../settings.php');
+    exit;
+}
+?>
 <!-- Settings Page Content -->
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Settings Menu -->
     <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="admin-card overflow-hidden">
             <nav class="flex flex-col">
-                <button onclick="switchTab('general')" class="settings-tab active px-6 py-3 text-left border-l-4 border-indigo-600 bg-indigo-50" data-tab="general">
-                    <i class="fas fa-cog mr-2"></i> General Settings
+                <button type="button" onclick="switchTab('general')" class="settings-tab active" data-tab="general">
+                    <i class="fas fa-cog"></i> General Settings
                 </button>
-                <button onclick="switchTab('email')" class="settings-tab px-6 py-3 text-left border-l-4 border-transparent hover:bg-gray-50" data-tab="email">
+                <button type="button" onclick="switchTab('email')" class="settings-tab" data-tab="email">
                     <i class="fas fa-envelope mr-2"></i> Email Settings
                 </button>
-                <button onclick="switchTab('survey')" class="settings-tab px-6 py-3 text-left border-l-4 border-transparent hover:bg-gray-50" data-tab="survey">
-                    <i class="fas fa-poll mr-2"></i> Survey Settings
+                <button type="button" onclick="switchTab('survey')" class="settings-tab" data-tab="survey">
+                    <i class="fas fa-poll"></i> Survey Settings
                 </button>
-                <button onclick="switchTab('advanced')" class="settings-tab px-6 py-3 text-left border-l-4 border-transparent hover:bg-gray-50" data-tab="advanced">
-                    <i class="fas fa-sliders-h mr-2"></i> Advanced
+                <button type="button" onclick="switchTab('advanced')" class="settings-tab" data-tab="advanced">
+                    <i class="fas fa-sliders-h"></i> Advanced
                 </button>
-                <button onclick="switchTab('account')" class="settings-tab px-6 py-3 text-left border-l-4 border-transparent hover:bg-gray-50" data-tab="account">
-                    <i class="fas fa-user mr-2"></i> Account
+                <button type="button" onclick="switchTab('account')" class="settings-tab" data-tab="account">
+                    <i class="fas fa-user"></i> Account
                 </button>
             </nav>
         </div>
@@ -27,9 +33,9 @@
     <!-- Settings Content -->
     <div class="lg:col-span-2">
         <!-- General Settings Tab -->
-        <div id="tab-general" class="settings-content">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">General Settings</h2>
+        <div id="tab-general" class="settings-content active">
+            <div class="admin-card">
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-6">General Settings</h2>
                 
                 <form class="space-y-6">
                     <div>
@@ -67,7 +73,7 @@
         </div>
 
         <!-- Email Settings Tab -->
-        <div id="tab-email" class="settings-content hidden">
+        <div id="tab-email" class="settings-content">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Email Settings</h2>
                 
@@ -98,7 +104,7 @@
         </div>
 
         <!-- Survey Settings Tab -->
-        <div id="tab-survey" class="settings-content hidden">
+        <div id="tab-survey" class="settings-content">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Survey Settings</h2>
                 
@@ -137,7 +143,7 @@
         </div>
 
         <!-- Advanced Settings Tab -->
-        <div id="tab-advanced" class="settings-content hidden">
+        <div id="tab-advanced" class="settings-content">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Advanced Settings</h2>
                 
@@ -173,7 +179,7 @@
         </div>
 
         <!-- Account Settings Tab -->
-        <div id="tab-account" class="settings-content hidden">
+        <div id="tab-account" class="settings-content">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h2>
                 
@@ -221,22 +227,11 @@
 
 <script>
     function switchTab(tabName) {
-        // Hide all tabs
         document.querySelectorAll('.settings-content').forEach(el => {
-            el.classList.add('hidden');
+            el.classList.toggle('active', el.id === 'tab-' + tabName);
         });
-        
-        // Remove active class from all buttons
         document.querySelectorAll('.settings-tab').forEach(btn => {
-            btn.classList.remove('active', 'border-indigo-600', 'bg-indigo-50');
-            btn.classList.add('border-transparent');
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
         });
-        
-        // Show selected tab
-        document.getElementById('tab-' + tabName).classList.remove('hidden');
-        
-        // Add active class to button
-        event.target.closest('.settings-tab').classList.add('active', 'border-indigo-600', 'bg-indigo-50');
-        event.target.closest('.settings-tab').classList.remove('border-transparent');
     }
 </script>
