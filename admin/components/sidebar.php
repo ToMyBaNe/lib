@@ -30,22 +30,17 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             <i class="fas fa-cog admin-sidebar__icon"></i>
             <span>Settings</span>
         </a>
+        <a href="./generate_link.php" class="admin-sidebar__link <?php echo $currentPage === 'generate_link' ? 'admin-sidebar__link--active' : ''; ?>">
+            <i class="fa-solid fa-chart-line admin-sidebar__icon"></i>
+            <span>Generate Link</span>
+        </a>
     </nav>
 
     <div class="admin-sidebar__tools">
-        <span class="admin-sidebar__label">Tools</span>
-        <a href="./diagnostic.php" class="admin-sidebar__link admin-sidebar__link--sm <?php echo $currentPage === 'diagnostic' ? 'admin-sidebar__link--active' : ''; ?>">
-            <i class="fas fa-stethoscope admin-sidebar__icon"></i>
-            <span>Diagnostic</span>
-        </a>
-        <a href="./login_debug.php" class="admin-sidebar__link admin-sidebar__link--sm <?php echo $currentPage === 'login_debug' ? 'admin-sidebar__link--active' : ''; ?>">
-            <i class="fas fa-bug admin-sidebar__icon"></i>
-            <span>Debug</span>
-        </a>
-        <a href="../api_tester.php" target="_blank" rel="noopener" class="admin-sidebar__link admin-sidebar__link--sm">
-            <i class="fas fa-flask admin-sidebar__icon"></i>
-            <span>API Tester</span>
-            <i class="fas fa-external-link-alt admin-sidebar__external"></i>
+        <span class="admin-sidebar__label">More Options</span>
+        <a href="./create-user.php" class="admin-sidebar__link admin-sidebar__link--sm <?php echo $currentPage === 'login_debug' ? 'admin-sidebar__link--active' : ''; ?>">
+            <i class="fa-solid fa-users admin-sidebar__icon"></i>
+            <span>Add More Admins</span>
         </a>
     </div>
 

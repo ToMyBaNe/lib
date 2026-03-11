@@ -491,6 +491,13 @@ class SurveyFormManager {
     handleSubmissionSuccess() {
         this.getElement('surveyContainer')?.classList.add('hidden');
         this.getElement('successMessage')?.classList.remove('hidden');
+
+        const params = new URLSearchParams(window.location.search);
+
+        const data = params.get("data");
+        const decoded = atob(data);
+
+        document.location.href=decoded
     }
 
     /**
