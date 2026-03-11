@@ -497,7 +497,13 @@ class SurveyFormManager {
         const data = params.get("data");
         const decoded = atob(data);
 
-        document.location.href=decoded
+        if(decoded.includes("https://")){
+            window.location.href=decoded
+        }else{
+            window.location.href="https://"+decoded
+        }
+
+        
     }
 
     /**
