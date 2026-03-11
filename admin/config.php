@@ -79,8 +79,9 @@ function getPageTitle($page = null) {
         'manage_questions' => 'Manage Survey Questions',
         'responses' => 'Survey Responses',
         'settings' => 'Settings',
-        'login' => 'Admin Login'
+        'login' => 'Login',
+        'Generate_Link' => 'Generate Link for Survey'
     ];
-    return $titles[$page] ?? 'Admin Panel';
+    return $titles[$page] ?? 'Library Survey System';
 }
 ?>

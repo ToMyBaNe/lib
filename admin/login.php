@@ -25,7 +25,7 @@
 <body class="login-page">
     <div class="login-card">
         <div class="login-card__head">
-            <h1 class="login-card__title">Survey Admin</h1>
+            <h1 class="login-card__title">Login</h1>
             <p class="login-card__sub">Sign in to continue</p>
         </div>
         
@@ -46,11 +46,6 @@
                 <span>Sign in</span>
             </button>
         </form>
-        
-        <div class="login-card__footer">
-            <p>Demo: <strong>admin</strong> / <strong>password123</strong></p>
-            <p class="mt-2"><a href="login_debug.php"><i class="fas fa-bug mr-1"></i> Troubleshoot</a></p>
-        </div>
     </div>
     
     <script>

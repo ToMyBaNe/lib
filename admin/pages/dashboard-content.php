@@ -134,49 +134,6 @@
     </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="admin-card bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">
-            <i class="fas fa-rocket mr-2"></i> Quick Actions
-        </h2>
-        <div class="space-y-3">
-            <a href="./manage_questions.php" class="block btn btn-primary">
-                <i class="fas fa-plus mr-2"></i> Add New Question
-            </a>
-            <a href="./manage_questions.php" class="block btn btn-secondary">
-                <i class="fas fa-list mr-2"></i> View All Questions
-            </a>
-            <a href="./responses.php" class="block btn btn-secondary">
-                <i class="fas fa-chart-bar mr-2"></i> View Responses
-            </a>
-        </div>
-    </div>
-
-    <div class="admin-card bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">
-            <i class="fas fa-info-circle mr-2"></i> System Information
-        </h2>
-        <dl class="space-y-3 text-sm">
-            <div class="flex justify-between">
-                <dt class="text-gray-600">PHP Version:</dt>
-                <dd class="text-gray-900 font-medium"><?php echo phpversion(); ?></dd>
-            </div>
-            <div class="flex justify-between">
-                <dt class="text-gray-600">Server:</dt>
-                <dd class="text-gray-900 font-medium"><?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'; ?></dd>
-            </div>
-            <div class="flex justify-between">
-                <dt class="text-gray-600">Database:</dt>
-                <dd class="text-gray-900 font-medium">MySQL</dd>
-            </div>
-            <div class="flex justify-between">
-                <dt class="text-gray-600">Current User:</dt>
-                <dd class="text-gray-900 font-medium"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Unknown'); ?></dd>
-            </div>
-        </dl>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

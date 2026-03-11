@@ -11,7 +11,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
     <div class="lg:col-span-1">
         <div class="admin-card overflow-hidden">
             <nav class="flex flex-col">
-                <button type="button" onclick="switchTab('general')" class="settings-tab active" data-tab="general">
+                <!-- <button type="button" onclick="switchTab('general')" class="settings-tab active" data-tab="general">
                     <i class="fas fa-cog"></i> General Settings
                 </button>
                 <button type="button" onclick="switchTab('email')" class="settings-tab" data-tab="email">
@@ -22,7 +22,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
                 </button>
                 <button type="button" onclick="switchTab('advanced')" class="settings-tab" data-tab="advanced">
                     <i class="fas fa-sliders-h"></i> Advanced
-                </button>
+                </button> -->
                 <button type="button" onclick="switchTab('account')" class="settings-tab" data-tab="account">
                     <i class="fas fa-user"></i> Account
                 </button>
@@ -33,7 +33,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
     <!-- Settings Content -->
     <div class="lg:col-span-2">
         <!-- General Settings Tab -->
-        <div id="tab-general" class="settings-content active">
+        <div id="tab-general" class="settings-content">
             <div class="admin-card">
                 <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-6">General Settings</h2>
                 
@@ -143,7 +143,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
         </div>
 
         <!-- Advanced Settings Tab -->
-        <div id="tab-advanced" class="settings-content">
+        <div id="tab-advanced" class="settings-content ">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Advanced Settings</h2>
                 
@@ -179,7 +179,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
         </div>
 
         <!-- Account Settings Tab -->
-        <div id="tab-account" class="settings-content">
+        <div id="tab-account" class="settings-content active">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h2>
                 
