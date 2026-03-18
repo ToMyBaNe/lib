@@ -78,10 +78,10 @@ function getPageTitle($page = null) {
         'dashboard' => 'Dashboard',
         'manage_questions' => 'Manage Survey Questions',
         'responses' => 'Survey Responses',
-        'settings' => 'Settings',
+        'settings' => 'Account Settings',
         'login' => 'Login',
-        'Generate_Link' => 'Generate Link for Survey'
+        'generate_link' => 'Generate Link for Survey'
     ];
-    return $titles[$page] ?? 'Library Survey System';
+    return $titles[$page] ?? 'Library Survey Management System';
 }
 ?>

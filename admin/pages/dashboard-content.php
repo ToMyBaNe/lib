@@ -19,12 +19,12 @@
     <div class="stat-card bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm font-medium">Total Questions</p>
+                <p class="text-gray-500 text-sm font-medium">Total Respondents</p>
                 <h3 id="totalQuestions" class="text-3xl font-bold text-gray-900 mt-2">
                     <span class="inline-block animate-pulse">...</span>
                 </h3>
             </div>
-            <i class="fas fa-question-circle text-4xl text-blue-600 opacity-20"></i>
+            <i class="fas fa-user text-4xl text-blue-600 opacity-20"></i>
         </div>
     </div>
 
@@ -159,6 +159,7 @@
             let data;
             try {
                 data = JSON.parse(text);
+                
             } catch (e) {
                 console.error('Invalid JSON:', text);
                 return;
@@ -173,7 +174,7 @@
 
             // Update stat cards
             document.getElementById('totalResponses').textContent = analytics.total_responses;
-            document.getElementById('totalQuestions').textContent = analytics.total_questions;
+            document.getElementById('totalQuestions').textContent = analytics.total_respondents;
             document.getElementById('todayResponses').textContent = analytics.today_responses;
             const satStats = analytics.satisfaction_stats || {};
             document.getElementById('avgSatisfaction').textContent = 

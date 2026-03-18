@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./assets/admin.css">
     <style>
-        .login-page { min-height: 100vh; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: 'Inter', sans-serif; }
+        .login-page { min-height: 100vh; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: 'Inter', sans-serif;  }
         .login-card { width: 100%; max-width: 400px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; }
         .login-card__head { padding: 2rem; text-align: center; border-bottom: 1px solid #f1f5f9; }
         .login-card__title { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 0.25rem; }
@@ -22,7 +22,12 @@
         .login-card__footer a:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="login-page">
+<body class="login-page flex-col gap-4">
+    <div class="text-center">
+        <i class="fas fa-book-open text-5xl text-indigo-600 mb-4"></i>
+        <h1 class="text-2xl font-semibold">BASC Library</h1>
+        <h2 class="text-sm text-gray-700">BASC Library Survey Management System</h2>
+    </div>
     <div class="login-card">
         <div class="login-card__head">
             <h1 class="login-card__title">Login</h1>
@@ -30,20 +35,22 @@
         </div>
         
         <form id="loginForm" class="login-card__body space-y-4">
+            <div id="errorMessage" style="display: none;" class="alert alert-danger flex items-center">
+                <i class="fa-solid fa-circle-exclamation text-red-600 text-xl"></i>
+                <span id="errorText"></span>
+            </div>
             <div>
                 <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" required class="form-input" placeholder="Enter username" autocomplete="username">
+                <input type="text" id="username" name="username" class="form-input" placeholder="Enter username">
             </div>
             <div>
                 <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" required class="form-input" placeholder="Enter password" autocomplete="current-password">
+                <input type="password" id="password" name="password" class="form-input" placeholder="Enter password" autocomplete="current-password">
             </div>
-            <div id="errorMessage" style="display: none;" class="alert alert-danger">
-                <p id="errorText"></p>
-            </div>
+            
             <button type="submit" class="btn btn-primary w-full py-2.5">
                 <i class="fas fa-sign-in-alt"></i>
-                <span>Sign in</span>
+                <span>Login</span>
             </button>
         </form>
     </div>
@@ -58,7 +65,7 @@
             const submitBtn = e.target.querySelector('button[type="submit"]');
             
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Signing in…</span>';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Logging in…</span>';
             
             try {
                 const formData = new FormData();
@@ -78,7 +85,7 @@
                     document.getElementById('errorText').textContent = data.message || 'Login failed';
                     errorDiv.style.display = 'block';
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Sign in</span>';
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Login</span>';
                 }
             } catch (error) {
                 console.error('Error:', error);
