@@ -70,15 +70,15 @@
                     <p class="font-semibold">Error</p>
                     <p class="text-sm" id="errorText">Something went wrong. Please try again.</p>
                     <p class="text-sm mt-2">
-                        <a href="../troubleshoot_questions.php" class="underline font-semibold hover:no-underline">
+                        <!-- <a href="../troubleshoot_questions.php" class="underline font-semibold hover:no-underline">
                             📋 Troubleshoot this issue
-                        </a>
+                        </a> -->
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../assets/survey-form.js"></script>
+    <script src="../assets/survey-form.js"></script>    
 </body>
 </html>

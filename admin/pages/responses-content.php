@@ -106,7 +106,7 @@ let currentDetailId = null;
 class ResponsesManager {
     constructor() {
         this.currentPage = 0;
-        this.pageSize = 50;
+        this.pageSize = 10;
         this.totalRows = 0;
         this.filters = {
             date: '',
