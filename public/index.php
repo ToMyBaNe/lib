@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="icon" href="../assets/lib-logo-no-bg.png" type="image/x-icon">
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100">
     <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">

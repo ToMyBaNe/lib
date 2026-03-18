@@ -13,7 +13,7 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             </span>
             <span>
                 <span class="block text-xs font-medium uppercase tracking-[0.18em] text-emerald-500">BASC</span>
-                <span class="block text-sm">Survey Admin</span>
+                <span class="block text-sm">LSMS</span>
             </span>
         </a>
     </div>
