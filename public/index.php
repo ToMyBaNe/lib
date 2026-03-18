@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Satisfaction Survey</title>
+    <title>BASC Library Satisfaction Survey</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/styles.css">
@@ -14,10 +14,10 @@
             <!-- Header -->
             <div class="text-center mb-8">
                 <div class="flex justify-center mb-4">
-                    <i class="fas fa-book-open text-4xl text-indigo-600"></i>
+                    <img src="../assets/lib-logo-no-bg.png" alt="library-logo" class="w-28 mx-auto">
                 </div>
                 <h1 class="text-4xl font-bold text-gray-900 mb-2">Library Survey</h1>
-                <p class="text-gray-600">Help us improve your library experience</p>
+                <p class="text-gray-600">Help us improve your BASC library online experience</p>
             </div>
 
             <!-- Loading State -->
@@ -36,17 +36,18 @@
 
                     <!-- Submit Button -->
                     <div class="flex gap-4 pt-4 border-t">
-                        <button 
-                            type="submit" 
-                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
-                        >
-                            <i class="fas fa-check"></i> Submit Survey
-                        </button>
+                        
                         <button 
                             type="reset" 
                             class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
                         >
                             <i class="fas fa-redo"></i> Clear Form
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+                        >
+                            <i class="fas fa-check"></i> Submit Survey
                         </button>
                     </div>
                 </form>

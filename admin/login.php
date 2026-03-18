@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Library Survey</title>
+    <title>BASC LSMS | Login</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="assets/imgs/lib-logo-no-bg.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -28,7 +29,7 @@
     <style>
         .login-page { min-height: 100vh; background: #ecfdf3; display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: 'Inter', sans-serif;  }
         .login-card { width: 100%; max-width: 420px; background: #ffffff; border-radius: 18px; border: 1px solid rgba(22,163,74,0.18); box-shadow: 0 18px 45px rgba(15,118,110,0.08); overflow: hidden; }
-        .login-card__head { padding: 2rem; text-align: center; border-bottom: 1px solid #e5e7eb; background: #dcfce7; }
+        .login-card__head { padding: 2rem; text-align: center;  }
         .login-card__title { font-size: 1.25rem; font-weight: 600; color: #052e16; margin-bottom: 0.25rem; }
         .login-card__sub { font-size: 0.875rem; color: #166534; }
         .login-card__body { padding: 1.5rem 2rem 2rem; }
@@ -39,8 +40,8 @@
 </head>
 <body class="login-page flex-col gap-4">
     <div class="text-center">
-        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-green shadow-lg shadow-emerald-900/10">
-            <i class="fas fa-book-open text-3xl text-white"></i>
+        <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl shadow-lg shadow-emerald-900/10">
+            <img src="assets/imgs/lib-logo-no-bg.png" alt="">
         </div>
         <h1 class="text-2xl font-semibold text-brand-dark">BASC Library</h1>
         <h2 class="text-sm text-emerald-700">Library Survey Management System</h2>

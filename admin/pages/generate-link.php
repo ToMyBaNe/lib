@@ -9,7 +9,7 @@
                 <label class="text-sm font-medium text-gray-700">Enter Link Here</label>
                 <textarea 
                     id="baseInput"
-                    class="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    class="form-input"
                     rows="4"
                     placeholder="Enter link to generate link to embedd..."
                 ></textarea>
@@ -20,14 +20,6 @@
                     class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                     <i class="fas fa-arrow-up mr-1"></i> Generate
                 </button>
-
-                <!-- <button onclick="decodeBase64()" 
-                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                    <i class="fas fa-arrow-down mr-1"></i> Decode
-                </button> -->
-
-                
-
                 <button onclick="clearBase64()" 
                     class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
                     <i class="fas fa-trash mr-1"></i> Clear
@@ -41,7 +33,7 @@
                 <label class="text-sm font-medium text-gray-700">Result</label>
                 <textarea 
                     id="baseOutput"
-                    class="w-full mt-1 p-3 border rounded-lg bg-gray-50"
+                    class="form-input"
                     rows="4"
                     readonly
                 ></textarea>

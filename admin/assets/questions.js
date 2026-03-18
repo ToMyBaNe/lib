@@ -9,13 +9,19 @@ let deleteId = null;
 // Load all questions
 async function loadQuestions() {
     try {
-        const data = await apiRequest('questions.php?action=list');
-        
-        if (!data.success) {
-            throw new Error(data.message || 'Failed to load questions');
+        const res = await apiRequest('questions.php?action=list');
+
+        // Support both shapes:
+        // - adminPanel.apiRequest => { success: true, data: <serverJson> }
+        // - direct fetch => <serverJson>
+        const server = res?.data ?? res;
+
+        if (!res?.success && server?.success === false) {
+            throw new Error(server?.message || res?.message || 'Failed to load questions');
         }
-        
-        questions = data.data.questions || [];
+
+        const list = server?.questions ?? server?.data?.questions ?? [];
+        questions = Array.isArray(list) ? list : [];
         renderQuestions();
     } catch (error) {
         handleError('Failed to load questions: ' + error.message);
@@ -49,13 +55,14 @@ function renderQuestions() {
                         <h3 class="text-lg font-semibold text-gray-900">
                             ${index + 1}. ${escapeHtml(q.question)}
                         </h3>
+                        ${q.is_locked ? `<span class="inline-flex items-center gap-1 rounded bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700"><i class="fas fa-lock"></i> Locked</span>` : ''}
                     </div>
                 </div>
                 <div class="flex gap-2">
                     <button onclick="editQuestion(${q.id})" class="btn btn-primary btn-sm">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button onclick="openDeleteModal(${q.id})" class="btn btn-danger btn-sm">
+                    <button onclick="openDeleteModal(${q.id})" class="btn btn-danger btn-sm" ${q.is_locked ? 'disabled title="Locked questions cannot be deleted"' : ''}>
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -94,6 +101,7 @@ async function saveQuestion(e) {
     const questionType = document.getElementById('questionType').value;
     const category = document.getElementById('category').value.trim();
     const required = document.getElementById('required').checked;
+    const isLocked = document.getElementById('isLocked')?.checked;
 
     if (!questionText) {
         showError('Question text is required');
@@ -107,6 +115,7 @@ async function saveQuestion(e) {
     formData.append('question_type', questionType);
     formData.append('category_id', category);
     if (required) formData.append('is_required', '1');
+    if (isLocked) formData.append('is_locked', '1');
 
     // Add options if applicable
     if (['rating', 'select', 'checkbox'].includes(questionType)) {
@@ -177,6 +186,8 @@ async function editQuestion(id) {
         document.getElementById('questionType').value = q.question_type;
         document.getElementById('category').value = q.category_name || '';
         document.getElementById('required').checked = q.is_required;
+        const lockEl = document.getElementById('isLocked');
+        if (lockEl) lockEl.checked = !!q.is_locked;
 
         document.getElementById('modalTitle').textContent = 'Edit Question';
 
@@ -267,6 +278,8 @@ function closeModal() {
     document.getElementById('optionsInput').innerHTML = '';
     document.getElementById('optionsContainer').classList.add('hidden');
     document.getElementById('questionType').value = 'text';
+    const lockEl = document.getElementById('isLocked');
+    if (lockEl) lockEl.checked = false;
     currentEditId = null;
 }
 
@@ -280,6 +293,11 @@ function openAddModal() {
 }
 
 function openDeleteModal(id) {
+    const q = (questions || []).find(x => String(x.id) === String(id));
+    if (q?.is_locked) {
+        showWarning('This question is locked and cannot be deleted.');
+        return;
+    }
     deleteId = id;
     document.getElementById('deleteModal').classList.remove('hidden');
 }

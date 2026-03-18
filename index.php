@@ -6,12 +6,13 @@
     <title>BASC | Library Survey Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="assets/lib-logo-no-bg.png" type="image/x-icon">
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
     <div class="w-[30rem]">
         <div class="w-full bg-white rounded-lg shadow-xl p-8">
             <div class="text-center mb-8">
-                <i class="fas fa-book-open text-5xl text-indigo-600 mb-4"></i>
+                <img src="assets/lib-logo-no-bg.png" alt="library-logo" class="w-40 mx-auto">
                 <h1 class="text-4xl font-bold text-gray-900">BASC Library Survey Management System</h1>
                 <p class="text-gray-600 mt-2">Welcome to the Library Survey Management System</p>
             </div>

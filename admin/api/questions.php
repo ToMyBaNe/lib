@@ -24,6 +24,12 @@ if (!$tables || $tables->num_rows === 0) {
     exit;
 }
 
+$lockColumnCheck = $conn->query("SHOW COLUMNS FROM survey_questions LIKE 'is_locked'");
+if ($lockColumnCheck && $lockColumnCheck->num_rows === 0) {
+    // Safe, one-time upgrade: add lock column
+    $conn->query("ALTER TABLE survey_questions ADD COLUMN is_locked TINYINT(1) NOT NULL DEFAULT 0 AFTER is_active");
+}
+
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -74,6 +80,7 @@ function getAllQuestions() {
                 q.is_required,
                 q.display_order,
                 q.is_active,
+                q.is_locked,
                 q.created_at
               FROM survey_questions q
               LEFT JOIN survey_categories c ON q.category_id = c.id
@@ -89,6 +96,7 @@ function getAllQuestions() {
         $row['options'] = $row['options'] ? json_decode($row['options'], true) : [];
         $row['is_required'] = (bool)$row['is_required'];
         $row['is_active'] = (bool)$row['is_active'];
+        $row['is_locked'] = (bool)($row['is_locked'] ?? 0);
         $questions[] = $row;
     }
     
@@ -126,6 +134,7 @@ function getQuestion($id) {
     $question['options'] = $question['options'] ? json_decode($question['options'], true) : [];
     $question['is_required'] = (bool)$question['is_required'];
     $question['is_active'] = (bool)$question['is_active'];
+    $question['is_locked'] = (bool)($question['is_locked'] ?? 0);
     
     http_response_code(200);
     echo json_encode([
@@ -205,6 +214,7 @@ function createQuestion() {
     $options = (isset($_POST['options']) && !empty($_POST['options'])) ? json_decode($_POST['options'], true) : [];
     $is_required = isset($_POST['is_required']) ? 1 : 0;
     $is_active = $_POST['is_active'] ?? 1;
+    $is_locked = isset($_POST['is_locked']) ? 1 : 0;
     
     // Get or create category ID from name
     $category_id = getOrCreateCategory($categoryName);
@@ -228,10 +238,10 @@ function createQuestion() {
     $orderQuery->close();
     
     $stmt = $conn->prepare("INSERT INTO survey_questions 
-                           (category_id, question, question_type, options, is_required, is_active, display_order) 
-                           VALUES (?, ?, ?, ?, ?, ?, ?)");
+                           (category_id, question, question_type, options, is_required, is_active, is_locked, display_order) 
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     
-    $stmt->bind_param('issssii', $category_id, $question, $question_type, $options_json, $is_required, $is_active, $display_order);
+    $stmt->bind_param('issssiii', $category_id, $question, $question_type, $options_json, $is_required, $is_active, $is_locked, $display_order);
     
     if (!$stmt->execute()) {
         throw new Exception('Insert failed: ' . $stmt->error);
@@ -262,6 +272,7 @@ function updateQuestion($id) {
     $question_type = trim($_POST['question_type'] ?? 'text');
     $options = (isset($_POST['options']) && !empty($_POST['options'])) ? json_decode($_POST['options'], true) : [];
     $is_required = isset($_POST['is_required']) ? 1 : 0;
+    $is_locked = isset($_POST['is_locked']) ? 1 : 0;
     
     // Get existing question to preserve is_active status
     $getStmt = $conn->prepare("SELECT is_active FROM survey_questions WHERE id = ?");
@@ -289,10 +300,10 @@ function updateQuestion($id) {
     $options_json = json_encode($options);
     
     $stmt = $conn->prepare("UPDATE survey_questions 
-                           SET category_id = ?, question = ?, question_type = ?, options = ?, is_required = ?, is_active = ?
+                           SET category_id = ?, question = ?, question_type = ?, options = ?, is_required = ?, is_active = ?, is_locked = ?
                            WHERE id = ?");
     
-    $stmt->bind_param('issssii', $category_id, $question, $question_type, $options_json, $is_required, $is_active, $id);
+    $stmt->bind_param('issssiii', $category_id, $question, $question_type, $options_json, $is_required, $is_active, $is_locked, $id);
     
     if (!$stmt->execute()) {
         throw new Exception('Update failed: ' . $stmt->error);
@@ -315,6 +326,21 @@ function deleteQuestion($id) {
     $id = (int)$id;
     if (!$id) {
         throw new Exception('Question ID required');
+    }
+
+    $check = $conn->prepare("SELECT is_locked FROM survey_questions WHERE id = ?");
+    $check->bind_param('i', $id);
+    $check->execute();
+    $row = $check->get_result()->fetch_assoc();
+    $check->close();
+
+    if (!$row) {
+        throw new Exception('Question not found');
+    }
+    if (!empty($row['is_locked'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'This question is locked and cannot be deleted.']);
+        exit;
     }
     
     $stmt = $conn->prepare("DELETE FROM survey_questions WHERE id = ?");

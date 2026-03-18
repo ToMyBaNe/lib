@@ -8,8 +8,8 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 <aside class="admin-sidebar bg-white">
     <div class="border-b border-emerald-100 px-4 py-4">
         <a href="./dashboard.php" class="flex items-center gap-3 text-sm font-semibold text-emerald-900">
-            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-green text-white">
-                <i class="fas fa-chart-pie text-sm"></i>
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white">
+                <img src="assets/imgs/lib-logo-no-bg.png" alt="">
             </span>
             <span>
                 <span class="block text-xs font-medium uppercase tracking-[0.18em] text-emerald-500">BASC</span>

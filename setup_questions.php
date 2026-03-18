@@ -66,6 +66,7 @@ $create_questions_table = "
         is_required BOOLEAN DEFAULT 1,
         display_order INT DEFAULT 0,
         is_active BOOLEAN DEFAULT 1,
+        is_locked BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY fk_category (category_id) REFERENCES survey_categories(id),
