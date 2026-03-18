@@ -1,8 +1,8 @@
 -- Library Survey Database Schema
 -- Supports dynamic survey questions and flexible response storage
 
-CREATE DATABASE IF NOT EXISTS library_survey;
-USE library_survey;
+CREATE DATABASE IF NOT EXISTS u160843353_library;
+USE u160843353_library;
 
 -- ============================================
 -- Admin Users Table
