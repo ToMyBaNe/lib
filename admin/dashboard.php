@@ -3,7 +3,7 @@ session_start();
 require_once 'config.php';
 requireAdminAuth();
 
-$pageTitle = 'Dashboard';
+$pageTitle = 'BASC LSMS | Dashboard';
 $additionalCss = [];
 $additionalScripts = [];
 

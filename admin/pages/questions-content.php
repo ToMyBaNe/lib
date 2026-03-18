@@ -6,6 +6,20 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
 ?>
 <!-- Questions Management Page Content -->
 
+<!-- Add Buttons -->
+<div class="mb-6 flex justify-between gap-3">
+    <h1 class="text-lg font-semibold">Manage your survey questionairre here</h1>
+    <div class="flex gap-4 items-center">
+        <button onclick="openAddModal()" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Question
+        </button>
+        <button onclick="openBatchModal()" class="btn btn-secondary">
+            <i class="fas fa-upload"></i> Batch Import
+        </button>
+    </div>
+    
+</div>
+
 <!-- Loading State -->
 <div id="loadingState" class="text-center py-12">
     <div class="spinner inline-block"></div>
@@ -26,15 +40,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
     </button>
 </div>
 
-<!-- Add Buttons -->
-<div class="mb-6 flex gap-3">
-    <button onclick="openAddModal()" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Add Question
-    </button>
-    <button onclick="openBatchModal()" class="btn btn-secondary">
-        <i class="fas fa-upload"></i> Batch Import
-    </button>
-</div>
+
 
 <!-- Add/Edit Modal -->
 <div id="questionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">

@@ -26,10 +26,15 @@
                     <i class="fas fa-arrow-down mr-1"></i> Decode
                 </button> -->
 
+                
+
                 <button onclick="clearBase64()" 
                     class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
                     <i class="fas fa-trash mr-1"></i> Clear
                 </button>
+
+                <button onclick="copyText()" class="py-1 px-2 rounded-lg bg-gray-100 hover:bg-gray-200"><i class="fa-solid fa-copy"></i> Copy</button>
+                <span id="copyMsg"></span>
             </div>
 
             <div>
@@ -99,6 +104,16 @@
             document.getElementById("baseInput").value = "";
             document.getElementById("baseOutput").value = "";
         }
+
+        function copyText() {
+            const text = document.getElementById("baseOutput").value;
+            const msg = document.getElementById("copyMsg");
+
+            navigator.clipboard.writeText(text).then(() => {
+                msg.innerText = "Copied!";
+                setTimeout(() => msg.innerText = "", 2000);
+            });
+            }
     </script>
 
 </div>

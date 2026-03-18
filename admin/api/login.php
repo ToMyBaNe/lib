@@ -19,19 +19,8 @@ try {
         throw new Exception('Username and password are required');
     }
     
-    // Check if users table exists
-    $tableCheck = $conn->query("SHOW TABLES LIKE 'users'");
-    if (!$tableCheck || $tableCheck->num_rows === 0) {
-        throw new Exception('Users table not found. Please run database setup first.');
-    }
-    
     // Query user from database
     $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
-    
-    if (!$stmt) {
-        throw new Exception('Database error: ' . $conn->error);
-    }
-    
     $stmt->bind_param('s', $username);
     
     if (!$stmt->execute()) {

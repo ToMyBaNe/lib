@@ -37,31 +37,31 @@ function hasColumn($conn, $column) {
     return $r && $r->num_rows > 0;
 }
 
-try {
-    $analytics = [
-        'total_responses' => getTotalResponses($conn),
-        'today_responses' => getTodayResponses($conn),
-        'total_questions' => getTotalQuestions($conn),
-        'satisfaction_stats' => getSatisfactionStats($conn),
-        'visit_frequency' => getVisitFrequency($conn),
-        'visit_purpose' => getVisitPurpose($conn),
-        'recommendation_rate' => getRecommendationRate($conn),
-        'ratings_breakdown' => getRatingsBreakdown($conn)
-    ];
+    try {
+        $analytics = [
+            'total_responses' => getTotalResponses($conn),
+            'today_responses' => getTodayResponses($conn),
+            'total_respondents' => getTotalRespondents($conn),
+            'satisfaction_stats' => getSatisfactionStats($conn),
+            'visit_frequency' => getVisitFrequency($conn),
+            'visit_purpose' => getVisitPurpose($conn),
+            'recommendation_rate' => getRecommendationRate($conn),
+            'ratings_breakdown' => getRatingsBreakdown($conn)
+        ];
 
-    ob_end_clean();
-    echo json_encode([
-        'success' => true,
-        'data' => $analytics
-    ]);
-    exit;
+        ob_end_clean();
+        echo json_encode([
+            'success' => true,
+            'data' => $analytics
+        ]);
+        exit;
 
-} catch (Exception $e) {
-    ob_end_clean();
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-    exit;
-}
+    } catch (Exception $e) {
+        ob_end_clean();
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        exit;
+    }
 
 function getTotalResponses($conn) {
     $result = $conn->query("SELECT COUNT(*) as count FROM survey_responses");
@@ -77,8 +77,8 @@ function getTodayResponses($conn) {
     return (int)($row['count'] ?? 0);
 }
 
-function getTotalQuestions($conn) {
-    $result = $conn->query("SELECT COUNT(*) as count FROM survey_questions");
+function getTotalRespondents($conn) {
+    $result = $conn->query("SELECT COUNT(DISTINCT visitor_email) as count FROM survey_responses");
     if (!$result) return 0;
     $row = $result->fetch_assoc();
     return (int)($row['count'] ?? 0);
