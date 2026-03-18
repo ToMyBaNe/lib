@@ -5,10 +5,22 @@
  */
 
 session_start();
-header('Content-Type: application/json');
+
+$action = $_GET['action'] ?? '';
+
+// Set content type header based on action
+if ($action === 'export') {
+    // Don't set JSON header for export (will use CSV header)
+} else {
+    header('Content-Type: application/json');
+}
 
 // Authentication check
 if (!isset($_SESSION['user_id'])) {
+    if ($action === 'export') {
+        http_response_code(401);
+        exit;
+    }
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
@@ -17,7 +29,6 @@ if (!isset($_SESSION['user_id'])) {
 // Include database configuration
 require_once '../../api/db_config.php';
 
-$action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
@@ -261,10 +272,35 @@ function exportResponses() {
         $types .= "s";
     }
 
+    // Fetch all active survey questions ordered by display_order
+    $questionsStmt = $conn->prepare("
+        SELECT id, question, question_type
+        FROM survey_questions
+        WHERE is_active = 1
+        ORDER BY display_order ASC
+    ");
+
+    if (!$questionsStmt) {
+        throw new Exception("Prepare failed: " . $conn->error);
+    }
+
+    if (!$questionsStmt->execute()) {
+        throw new Exception("Execute failed: " . $questionsStmt->error);
+    }
+
+    $questionsResult = $questionsStmt->get_result();
+    $questions = [];
+    $questionIds = [];
+
+    while ($q = $questionsResult->fetch_assoc()) {
+        $questions[] = $q;
+        $questionIds[] = $q['id'];
+    }
+    $questionsStmt->close();
+
+    // Fetch responses
     $stmt = $conn->prepare("
-        SELECT visitor_name, visitor_email, visit_frequency, purpose,
-               satisfaction, book_availability, staff_helpfulness, facilities_rating,
-               would_recommend, improvements_feedback, created_at
+        SELECT visitor_name, visitor_email, visit_frequency, purpose, responses_data, created_at
         FROM survey_responses
         WHERE $where
         ORDER BY created_at DESC
@@ -288,41 +324,88 @@ function exportResponses() {
 
     // Generate CSV
     $filename = 'survey_responses_' . date('Y-m-d_His') . '.csv';
-    header('Content-Type: text/csv');
+    header('Content-Type: text/csv; charset=utf-8');
     header("Content-Disposition: attachment; filename=\"$filename\"");
+    header('Pragma: no-cache');
+    header('Expires: 0');
 
     $output = fopen('php://output', 'w');
 
-    // Write header
-    fputcsv($output, [
-        'Name',
-        'Email',
-        'Visit Frequency',
-        'Purpose',
-        'Satisfaction',
-        'Book Availability',
-        'Staff Helpfulness',
-        'Facilities Rating',
-        'Would Recommend',
-        'Improvements',
-        'Submitted At'
-    ]);
+    // Write BOM for UTF-8 (helps with Excel)
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
+    // Build CSV header with visitor info + all questions
+    $headers = ['Name', 'Email', 'Visit Frequency', 'Purpose'];
+    foreach ($questions as $question) {
+        $headers[] = $question['question'];
+    }
+    $headers[] = 'Submitted At';
+
+    fputcsv($output, $headers);
+
+    // Collect all responses and calculate averages
+    $allResponses = [];
+    $questionAverages = array_fill_keys($questionIds, []);
+    
     while($row = $result->fetch_assoc()) {
-        fputcsv($output, [
+        // Decode JSON responses
+        $responses = [];
+        if (!empty($row['responses_data'])) {
+            $decoded = json_decode($row['responses_data'], true);
+            if (is_array($decoded)) {
+                $responses = $decoded;
+            }
+        }
+
+        // Build row with visitor info + answers for each question
+        $rowData = [
             $row['visitor_name'],
             $row['visitor_email'],
             $row['visit_frequency'],
-            $row['purpose'],
-            $row['satisfaction'],
-            $row['book_availability'],
-            $row['staff_helpfulness'],
-            $row['facilities_rating'],
-            $row['would_recommend'],
-            $row['improvements_feedback'],
-            $row['created_at']
-        ]);
+            $row['purpose']
+        ];
+
+        // Add answer for each question and collect numeric values for averaging
+        foreach ($questions as $question) {
+            $qId = $question['id'];
+            $answer = isset($responses[$qId]) ? $responses[$qId] : '';
+            $rowData[] = $answer;
+
+            // Collect numeric values for rating questions
+            if ($question['question_type'] === 'rating' && is_numeric($answer)) {
+                $questionAverages[$qId][] = (float)$answer;
+            }
+        }
+
+        $rowData[] = $row['created_at'];
+        $allResponses[] = $rowData;
+
+        fputcsv($output, $rowData);
     }
+
+    // Add blank row
+    fputcsv($output, []);
+
+    // Calculate and add averages row
+    $averageData = ['AVERAGE', '', '', ''];
+    
+    foreach ($questions as $question) {
+        $qId = $question['id'];
+        if (!empty($questionAverages[$qId])) {
+            $avg = array_sum($questionAverages[$qId]) / count($questionAverages[$qId]);
+            // Check if this is the satisfaction question
+            if (stripos($question['question'], 'satisfaction') !== false) {
+                $averageData[] = round($avg, 2) . ' (Satisfaction Average)';
+            } else {
+                $averageData[] = round($avg, 2);
+            }
+        } else {
+            $averageData[] = '-';
+        }
+    }
+    
+    $averageData[] = '';
+    fputcsv($output, $averageData);
 
     fclose($output);
     $stmt->close();
