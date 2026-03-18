@@ -7,9 +7,12 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
 <!-- Questions Management Page Content -->
 
 <!-- Add Buttons -->
-<div class="mb-6 flex justify-between gap-3">
-    <h1 class="text-lg font-semibold">Manage your survey questionairre here</h1>
-    <div class="flex gap-4 items-center">
+<div class="mb-6 flex items-center justify-between gap-3">
+    <div>
+        <h1 class="text-lg font-semibold text-emerald-900">Survey Questions</h1>
+        <p class="text-sm text-emerald-700/80">Create, edit and batch-import questions for your library survey.</p>
+    </div>
+    <div class="flex items-center gap-3">
         <button onclick="openAddModal()" class="btn btn-primary">
             <i class="fas fa-plus"></i> Add Question
         </button>
@@ -21,9 +24,9 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
 </div>
 
 <!-- Loading State -->
-<div id="loadingState" class="text-center py-12">
+<div id="loadingState" class="py-12 text-center">
     <div class="spinner inline-block"></div>
-    <p class="text-gray-600 mt-4">Loading questions...</p>
+    <p class="mt-4 text-sm text-emerald-700/80">Loading questions...</p>
 </div>
 
 <!-- Questions List -->
@@ -32,9 +35,10 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
 </div>
 
 <!-- Empty State -->
-<div id="emptyState" class="hidden text-center py-12">
-    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
-    <p class="text-gray-600 text-lg mb-4">No questions found</p>
+<div id="emptyState" class="hidden rounded-2xl bg-white py-12 text-center shadow-sm ring-1 ring-emerald-50">
+    <i class="mb-4 fas fa-inbox text-4xl text-emerald-300"></i>
+    <p class="mb-2 text-base font-medium text-emerald-900">No questions yet</p>
+    <p class="mb-4 text-sm text-emerald-700/80">Start by adding your first question to the survey.</p>
     <button onclick="openAddModal()" class="btn btn-primary">
         <i class="fas fa-plus"></i> Create First Question
     </button>
@@ -43,21 +47,21 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
 
 
 <!-- Add/Edit Modal -->
-<div id="questionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-screen overflow-y-auto">
-        <div class="sticky top-0 bg-white p-6 border-b flex justify-between items-center">
-            <h2 id="modalTitle" class="text-2xl font-bold">Add Question</h2>
+<div id="questionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 p-4">
+    <div class="max-h-screen w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-lg ring-1 ring-emerald-50">
+        <div class="sticky top-0 flex items-center justify-between border-b border-emerald-50 bg-white px-6 py-4">
+            <h2 id="modalTitle" class="text-lg font-semibold text-emerald-900">Add Question</h2>
             <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-2xl"></i>
             </button>
         </div>
         
-        <form id="questionForm" class="p-6 space-y-4">
+        <form id="questionForm" class="space-y-4 px-6 py-5">
             <input type="hidden" id="questionId" name="id">
             
             <!-- Question Text -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="mb-2 block text-sm font-medium text-emerald-900">
                     Question Text <span class="text-red-500">*</span>
                 </label>
                 <textarea id="questionText" name="question_text" required rows="3"
@@ -68,7 +72,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
             <!-- Question Type -->
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <label class="mb-2 block text-sm font-medium text-emerald-900">
                         Question Type <span class="text-red-500">*</span>
                     </label>
                     <select id="questionType" name="question_type" onchange="updateOptionsField()" required
@@ -81,7 +85,7 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <label class="mb-2 block text-sm font-medium text-emerald-900">
                         Category
                     </label>
                     <input type="text" id="category" name="category"
@@ -92,11 +96,11 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
             
             <!-- Options Field -->
             <div id="optionsContainer" class="hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="mb-2 block text-sm font-medium text-emerald-900">
                     Options
                 </label>
                 <div id="optionsInput" class="space-y-2"></div>
-                <button type="button" onclick="addOption()" class="mt-2 text-sm text-indigo-600 hover:text-indigo-700">
+                <button type="button" onclick="addOption()" class="mt-2 text-sm font-medium text-brand-green hover:text-emerald-700">
                     <i class="fas fa-plus mr-1"></i> Add Option
                 </button>
             </div>
@@ -105,13 +109,13 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
             <div>
                 <label class="flex items-center gap-3">
                     <input type="checkbox" id="required" name="required" checked
-                        class="w-4 h-4 text-indigo-600 rounded">
-                    <span class="text-sm font-medium text-gray-700">Required field</span>
+                        class="h-4 w-4 rounded border-emerald-300 text-brand-green focus:ring-brand-green">
+                    <span class="text-sm font-medium text-emerald-900">Required field</span>
                 </label>
             </div>
             
             <!-- Buttons -->
-            <div class="pt-6 border-t flex gap-3 justify-end">
+            <div class="flex justify-end gap-3 border-t border-emerald-50 pt-5">
                 <button type="button" onclick="closeModal()" class="btn btn-secondary">
                     Cancel
                 </button>
@@ -124,11 +128,11 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md">
-        <i class="fas fa-exclamation-circle text-4xl text-red-600 mb-4"></i>
-        <h2 class="text-2xl font-bold mb-2">Delete Question?</h2>
-        <p class="text-gray-600 mb-6">This action cannot be undone.</p>
+<div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-lg ring-1 ring-red-100">
+        <i class="mb-3 fas fa-exclamation-circle text-3xl text-red-500"></i>
+        <h2 class="mb-1 text-lg font-semibold text-emerald-950">Delete Question?</h2>
+        <p class="mb-5 text-sm text-emerald-700/90">This action cannot be undone. The question will be removed from the survey.</p>
         <div class="flex gap-3">
             <button onclick="closeDeleteModal()" class="flex-1 btn btn-secondary">
                 Cancel
@@ -141,16 +145,16 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
 </div>
 
 <!-- Batch Import Modal -->
-<div id="batchModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-screen overflow-y-auto">
-        <div class="sticky top-0 bg-white p-6 border-b flex justify-between items-center">
-            <h2 class="text-2xl font-bold">Batch Add Questions</h2>
+<div id="batchModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 p-4">
+    <div class="max-h-screen w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-lg ring-1 ring-emerald-50">
+        <div class="sticky top-0 flex items-center justify-between border-b border-emerald-50 bg-white px-6 py-4">
+            <h2 class="text-lg font-semibold text-emerald-900">Batch add questions</h2>
             <button onclick="closeBatchModal()" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-2xl"></i>
             </button>
         </div>
         
-        <form id="batchForm" class="p-6 space-y-4">
+        <form id="batchForm" class="space-y-4 px-6 py-5">
             <!-- Questions Container -->
             <div id="batchQuestionsContainer" class="space-y-4">
                 <!-- Question fields will be added here -->

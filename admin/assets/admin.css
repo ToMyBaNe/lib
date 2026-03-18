@@ -2,24 +2,24 @@
 
 :root {
     --admin-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --admin-bg: #f8fafc;
+    --admin-bg: #ecfdf3;
     --admin-surface: #ffffff;
-    --admin-border: #e2e8f0;
-    --admin-border-light: #f1f5f9;
-    --admin-text: #0f172a;
-    --admin-text-muted: #64748b;
-    --admin-text-subtle: #94a3b8;
-    --admin-accent: #475569;
-    --admin-accent-hover: #334155;
-    --admin-primary: #3b82f6;
-    --admin-primary-hover: #2563eb;
-    --admin-success: #22c55e;
+    --admin-border: #d1fae5;
+    --admin-border-light: #e5f9ee;
+    --admin-text: #022c22;
+    --admin-text-muted: #047857;
+    --admin-text-subtle: #6ee7b7;
+    --admin-accent: #16a34a;
+    --admin-accent-hover: #15803d;
+    --admin-primary: #16a34a;
+    --admin-primary-hover: #15803d;
+    --admin-success: #16a34a;
     --admin-danger: #ef4444;
-    --admin-warning: #f59e0b;
+    --admin-warning: #fbbf24;
     --admin-radius: 12px;
     --admin-radius-sm: 8px;
-    --admin-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    --admin-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --admin-shadow: 0 1px 3px rgba(6, 95, 70, 0.18);
+    --admin-shadow-md: 0 16px 40px rgba(6, 95, 70, 0.18);
     --sidebar-w: 240px;
 }
 
@@ -41,21 +41,29 @@
 .admin-shell {
     display: flex;
     min-height: 100vh;
+    padding: 1.5rem;
 }
 
 /* Sidebar */
 .admin-sidebar {
     position: fixed;
-    left: 0;
-    top: 0;
+    left: 1.5rem;
+    top: 1.5rem;
     width: var(--sidebar-w);
-    height: 100vh;
+    height: calc(100vh - 3rem);
     background: var(--admin-surface);
     border-right: 1px solid var(--admin-border-light);
+    border-radius: 18px;
+    box-shadow: var(--admin-shadow-md);
     display: flex;
     flex-direction: column;
     z-index: 40;
     overflow-y: auto;
+}
+
+/* Collapsible sidebar (desktop) */
+.admin-sidebar.collapsed {
+    display: none;
 }
 
 .admin-sidebar__brand {
@@ -188,11 +196,16 @@
 /* Main area */
 .admin-main {
     flex: 1;
-    margin-left: var(--sidebar-w);
+    margin-left: calc(var(--sidebar-w) + 2rem);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     overflow: auto;
+}
+
+.admin-main.collapsed {
+    margin-left: 0;
+    transition: margin-left 0.2s ease;
 }
 
 .admin-content {

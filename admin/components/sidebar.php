@@ -5,11 +5,16 @@
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 ?>
 
-<aside class="admin-sidebar">
-    <div class="admin-sidebar__brand">
-        <a href="./dashboard.php" class="admin-sidebar__brand-link">
-            <span class="admin-sidebar__logo"><i class="fas fa-chart-pie"></i></span>
-            <span class="admin-sidebar__title">Survey Admin</span>
+<aside class="admin-sidebar bg-white">
+    <div class="border-b border-emerald-100 px-4 py-4">
+        <a href="./dashboard.php" class="flex items-center gap-3 text-sm font-semibold text-emerald-900">
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-green text-white">
+                <i class="fas fa-chart-pie text-sm"></i>
+            </span>
+            <span>
+                <span class="block text-xs font-medium uppercase tracking-[0.18em] text-emerald-500">BASC</span>
+                <span class="block text-sm">Survey Admin</span>
+            </span>
         </a>
     </div>
 
@@ -38,10 +43,11 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 
     <div class="admin-sidebar__tools">
         <span class="admin-sidebar__label">More Options</span>
-        <a href="./create-user.php" class="admin-sidebar__link admin-sidebar__link--sm <?php echo $currentPage === 'login_debug' ? 'admin-sidebar__link--active' : ''; ?>">
+        <button type="button" data-open-add-admin
+            class="admin-sidebar__link admin-sidebar__link--sm w-full text-left">
             <i class="fa-solid fa-users admin-sidebar__icon"></i>
             <span>Add More Admins</span>
-        </a>
+        </button>
     </div>
 
     <div class="admin-sidebar__footer">

@@ -8,25 +8,42 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#16a34a',
+                            gold: '#fbbf24',
+                            dark: '#064e3b'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./assets/admin.css">
     <style>
-        .login-page { min-height: 100vh; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: 'Inter', sans-serif;  }
-        .login-card { width: 100%; max-width: 400px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; }
-        .login-card__head { padding: 2rem; text-align: center; border-bottom: 1px solid #f1f5f9; }
-        .login-card__title { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 0.25rem; }
-        .login-card__sub { font-size: 0.875rem; color: #64748b; }
+        .login-page { min-height: 100vh; background: #ecfdf3; display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: 'Inter', sans-serif;  }
+        .login-card { width: 100%; max-width: 420px; background: #ffffff; border-radius: 18px; border: 1px solid rgba(22,163,74,0.18); box-shadow: 0 18px 45px rgba(15,118,110,0.08); overflow: hidden; }
+        .login-card__head { padding: 2rem; text-align: center; border-bottom: 1px solid #e5e7eb; background: #dcfce7; }
+        .login-card__title { font-size: 1.25rem; font-weight: 600; color: #052e16; margin-bottom: 0.25rem; }
+        .login-card__sub { font-size: 0.875rem; color: #166534; }
         .login-card__body { padding: 1.5rem 2rem 2rem; }
         .login-card__footer { padding: 1rem 2rem; background: #f8fafc; border-top: 1px solid #f1f5f9; text-align: center; font-size: 0.8125rem; color: #64748b; }
-        .login-card__footer a { color: #3b82f6; text-decoration: none; font-weight: 500; }
+        .login-card__footer a { color: #16a34a; text-decoration: none; font-weight: 500; }
         .login-card__footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body class="login-page flex-col gap-4">
     <div class="text-center">
-        <i class="fas fa-book-open text-5xl text-indigo-600 mb-4"></i>
-        <h1 class="text-2xl font-semibold">BASC Library</h1>
-        <h2 class="text-sm text-gray-700">BASC Library Survey Management System</h2>
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-green shadow-lg shadow-emerald-900/10">
+            <i class="fas fa-book-open text-3xl text-white"></i>
+        </div>
+        <h1 class="text-2xl font-semibold text-brand-dark">BASC Library</h1>
+        <h2 class="text-sm text-emerald-700">Library Survey Management System</h2>
     </div>
     <div class="login-card">
         <div class="login-card__head">
@@ -35,20 +52,20 @@
         </div>
         
         <form id="loginForm" class="login-card__body space-y-4">
-            <div id="errorMessage" style="display: none;" class="alert alert-danger flex items-center">
-                <i class="fa-solid fa-circle-exclamation text-red-600 text-xl"></i>
+            <div id="errorMessage" style="display: none;" class="mb-2 flex items-center gap-2 rounded-md border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">
+                <i class="fa-solid fa-circle-exclamation text-red-500 text-lg"></i>
                 <span id="errorText"></span>
             </div>
             <div>
-                <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" class="form-input" placeholder="Enter username">
+                <label for="username" class="mb-1 block text-sm font-medium text-emerald-900">Username</label>
+                <input type="text" id="username" name="username" class="block w-full rounded-lg border border-emerald-100 bg-white px-3 py-2 text-sm shadow-sm outline-none ring-0 focus:border-brand-green focus:ring-2 focus:ring-brand-green/40" placeholder="Enter username">
             </div>
             <div>
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-input" placeholder="Enter password" autocomplete="current-password">
+                <label for="password" class="mb-1 block text-sm font-medium text-emerald-900">Password</label>
+                <input type="password" id="password" name="password" class="block w-full rounded-lg border border-emerald-100 bg-white px-3 py-2 text-sm shadow-sm outline-none ring-0 focus:border-brand-green focus:ring-2 focus:ring-brand-green/40" placeholder="Enter password" autocomplete="current-password">
             </div>
             
-            <button type="submit" class="btn btn-primary w-full py-2.5">
+            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand-green px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-emerald-900/10 transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-brand-gold/60 focus:ring-offset-1">
                 <i class="fas fa-sign-in-alt"></i>
                 <span>Login</span>
             </button>

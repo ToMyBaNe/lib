@@ -6,34 +6,12 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
 ?>
 <!-- Settings Page Content -->
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Settings Menu -->
-    <div class="lg:col-span-1">
-        <div class="admin-card overflow-hidden">
-            <nav class="flex flex-col">
-                <!-- <button type="button" onclick="switchTab('general')" class="settings-tab active" data-tab="general">
-                    <i class="fas fa-cog"></i> General Settings
-                </button>
-                <button type="button" onclick="switchTab('email')" class="settings-tab" data-tab="email">
-                    <i class="fas fa-envelope mr-2"></i> Email Settings
-                </button>
-                <button type="button" onclick="switchTab('survey')" class="settings-tab" data-tab="survey">
-                    <i class="fas fa-poll"></i> Survey Settings
-                </button>
-                <button type="button" onclick="switchTab('advanced')" class="settings-tab" data-tab="advanced">
-                    <i class="fas fa-sliders-h"></i> Advanced
-                </button> -->
-                <button type="button" onclick="switchTab('account')" class="settings-tab" data-tab="account">
-                    <i class="fas fa-user"></i> Account
-                </button>
-            </nav>
-        </div>
-    </div>
-
+<div class="w-full">
+    
     <!-- Settings Content -->
-    <div class="lg:col-span-2">
+    <div class="lg:col-span-2 ">
         <!-- General Settings Tab -->
-        <div id="tab-general" class="settings-content">
+        <div id="tab-general" class="settings-content ">
             <div class="admin-card">
                 <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-6">General Settings</h2>
                 
@@ -195,30 +173,32 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'settings-content.php') {
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                                <input type="password" class="form-input" placeholder="••••••••">
+                                <input id="current_password" type="password" class="form-input" placeholder="••••••••">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                                <input type="password" class="form-input" placeholder="••••••••">
+                                <input id="new_password" type="password" class="form-input" placeholder="••••••••">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                                <input type="password" class="form-input" placeholder="••••••••">
+                                <input id="confirm_password" type="password" class="form-input" placeholder="••••••••">
                             </div>
 
-                            <button type="button" class="btn btn-primary">
+                            <div id="passwordMessage" class="text-sm mt-2" role="status" aria-live="polite"></div>
+
+                            <button id="changePasswordBtn" type="button" class="btn btn-primary">
                                 <i class="fas fa-key mr-2"></i> Update Password
                             </button>
                         </div>
                     </div>
 
-                    <div class="pt-6 border-t">
+                    <!-- <div class="pt-6 border-t">
                         <a href="login.php?action=logout" class="btn btn-danger">
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
                         </a>
-                    </div>
+                    </div> -->
                 </form>
             </div>
         </div>

@@ -8,9 +8,9 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'responses-content.php') {
 
 <div class="mb-6 flex justify-between items-center">
     <h2 class="text-lg font-semibold text-gray-900">Responses</h2>
-    <!-- <button type="button" onclick="exportResponses()" class="btn btn-primary">
+    <button type="button" onclick="exportResponses()" class="btn btn-primary">
         <i class="fas fa-download"></i> Export CSV
-    </button> -->
+    </button>
 </div>
 <div class="admin-card mb-6">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
