@@ -24,6 +24,50 @@ class AdminPanel {
     initializeComponents() {
         // Initialize tooltips, popovers, or other components
         console.log('✓ Components Initialized');
+
+        // Sidebar toggle (collapsible)
+        const toggleBtn = document.querySelector('[data-sidebar-toggle]');
+        const sidebar = document.querySelector('.admin-sidebar');
+        const main = document.querySelector('.admin-main');
+
+        if (toggleBtn && sidebar && main) {
+            toggleBtn.addEventListener('click', () => {
+                const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+                if (isMobile) {
+                    sidebar.classList.toggle('open');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('collapsed');
+                }
+            });
+        }
+
+        // "Add More Admins" modal
+        const addAdminModal = document.getElementById('addAdminModal');
+        const openAddAdminBtn = document.querySelector('[data-open-add-admin]');
+        const closeAddAdminButtons = document.querySelectorAll('[data-close-add-admin]');
+
+        if (addAdminModal && openAddAdminBtn) {
+            const openModal = () => {
+                addAdminModal.classList.remove('hidden');
+                addAdminModal.classList.add('flex');
+            };
+            const closeModal = () => {
+                addAdminModal.classList.add('hidden');
+                addAdminModal.classList.remove('flex');
+            };
+
+            openAddAdminBtn.addEventListener('click', openModal);
+
+            closeAddAdminButtons.forEach(btn => {
+                btn.addEventListener('click', closeModal);
+            });
+
+            addAdminModal.addEventListener('click', (e) => {
+                if (e.target === addAdminModal) closeModal();
+            });
+        }
     }
 
     /**

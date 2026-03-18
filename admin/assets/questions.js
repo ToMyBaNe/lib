@@ -64,15 +64,21 @@ function renderQuestions() {
             <div class="grid grid-cols-3 gap-4 text-sm">
                 <div>
                     <p class="text-gray-500">Type:</p>
-                    <p class="font-medium text-gray-900">${capitalizeCase(q.question_type)}</p>
+                    <p class="font-medium text-gray-900">
+                        <span class="inline-block px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-800">${escapeHtml(capitalizeCase(q.question_type || ''))}</span>
+                    </p>
                 </div>
                 <div>
                     <p class="text-gray-500">Category:</p>
-                    <p class="font-medium text-gray-900">${q.category || '—'}</p>
+                    <p class="font-medium text-gray-900">
+                        <span class="inline-block px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-800">${escapeHtml(q.category_name || '—')}</span>
+                    </p>
                 </div>
                 <div>
                     <p class="text-gray-500">Required:</p>
-                    <p class="font-medium text-gray-900">${q.required ? 'Yes' : 'Optional'}</p>
+                    <p class="font-medium text-gray-900">
+                        ${q.is_required ? '<span class="inline-block px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-semibold">Required</span>' : '<span class="inline-block px-2 py-0.5 rounded bg-gray-100 text-gray-800 text-xs">Optional</span>'}
+                    </p>
                 </div>
             </div>
         </div>
