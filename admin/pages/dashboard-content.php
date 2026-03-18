@@ -166,7 +166,7 @@
             const satStats = analytics.satisfaction_stats || {};
             document.getElementById('avgSatisfaction').textContent = 
                 (satStats.count > 0 && satStats.average != null)
-                    ? Number(satStats.average).toFixed(1)
+                    ? Number(satStats.average).toFixed(2)
                     : '-';
 
             // Update recommendation rate
