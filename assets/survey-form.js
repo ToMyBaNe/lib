@@ -504,13 +504,13 @@ class SurveyFormManager {
 
         const data = params.get("data");
         const decoded = atob(data);
-
-        if(decoded.includes("https://")){
+        if(data){
+            if(decoded.includes("https://")){
             window.location.href=decoded
-        }else{
-            window.location.href="https://"+decoded
-        }
-
+            }else{
+                window.location.href="https://"+decoded
+            }
+        }  
         
     }
 
@@ -520,6 +520,7 @@ class SurveyFormManager {
     showSurveyForm() {
         this.getElement('loadingState')?.classList.add('hidden');
         this.getElement('surveyContainer')?.classList.remove('hidden');
+        this.getElement('errorMessage')?.classList.add('hidden');
     }
 
     /**
