@@ -63,11 +63,16 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'responses-content.php') {
     </div>
     
     <!-- Pagination -->
-    <div class="bg-gray-50 px-6 py-4 flex justify-between items-center border-t">
-        <span id="paginationInfo" class="text-sm text-gray-600"></span>
-        <div class="flex gap-2">
-            <button onclick="previousPage()" class="btn btn-secondary" id="prevBtn">Previous</button>
-            <button onclick="nextPage()" class="btn btn-secondary" id="nextBtn">Next</button>
+    <div class="bg-gray-50 px-6 py-4 border-t">
+        <div class="flex justify-between items-center">
+            <span id="paginationInfo" class="text-sm text-gray-600"></span>
+            <div class="flex gap-2 items-center">
+                <button onclick="previousPage()" class="btn btn-secondary" id="prevBtn">Previous</button>
+                <div id="pageNumbers" class="flex gap-1 flex-wrap">
+                    <!-- Page number buttons will be inserted here -->
+                </div>
+                <button onclick="nextPage()" class="btn btn-secondary" id="nextBtn">Next</button>
+            </div>
         </div>
     </div>
 </div>
@@ -198,6 +203,38 @@ class ResponsesManager {
 
         document.getElementById('prevBtn').disabled = this.currentPage === 0;
         document.getElementById('nextBtn').disabled = end >= this.totalRows;
+
+        // Generate page number buttons
+        const totalPages = Math.ceil(this.totalRows / this.pageSize);
+        const pageNumbersDiv = document.getElementById('pageNumbers');
+        pageNumbersDiv.innerHTML = '';
+
+        // Show page numbers (with a max of 10 visible at a time)
+        const maxVisiblePages = 10;
+        let startPage = Math.max(0, this.currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages);
+
+        // Adjust startPage if we're near the end
+        if (endPage - startPage < maxVisiblePages) {
+            startPage = Math.max(0, endPage - maxVisiblePages);
+        }
+
+        for (let i = startPage; i < endPage; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `px-3 py-2 rounded ${
+                i === this.currentPage
+                    ? 'bg-indigo-600 text-white font-semibold'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+            }`;
+            pageBtn.textContent = i + 1;
+            pageBtn.onclick = () => this.goToPage(i);
+            pageNumbersDiv.appendChild(pageBtn);
+        }
+    }
+
+    goToPage(pageNumber) {
+        this.currentPage = pageNumber;
+        this.loadResponses();
     }
 
     async deleteResponse(id) {
