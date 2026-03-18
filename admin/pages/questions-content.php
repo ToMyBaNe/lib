@@ -113,6 +113,20 @@ if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'questions-content.php') {
                     <span class="text-sm font-medium text-emerald-900">Required field</span>
                 </label>
             </div>
+
+            <!-- Lock Question -->
+            <div>
+                <label class="flex items-center justify-between gap-3 rounded-lg border border-emerald-100 bg-emerald-50/40 px-3 py-2">
+                    <span>
+                        <span class="block text-sm font-medium text-emerald-900">
+                            <i class="fas fa-lock mr-1 text-brand-gold"></i> Lock question
+                        </span>
+                        <span class="block text-xs text-emerald-700/80">Locked questions cannot be deleted.</span>
+                    </span>
+                    <input type="checkbox" id="isLocked" name="is_locked"
+                        class="h-4 w-4 rounded border-emerald-300 text-brand-green focus:ring-brand-green">
+                </label>
+            </div>
             
             <!-- Buttons -->
             <div class="flex justify-end gap-3 border-t border-emerald-50 pt-5">

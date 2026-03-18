@@ -34,30 +34,30 @@ try {
     $responses = $data['responses'] ?? [];
 
     // Required field validation
-    if (empty($visitor_name)) {
-        throw new Exception('Visitor name is required');
-    }
+    // if (empty($visitor_name)) {
+    //     throw new Exception('Visitor name is required');
+    // }
 
-    if (strlen($visitor_name) > 100) {
-        throw new Exception('Visitor name must not exceed 100 characters');
-    }
+    // if (strlen($visitor_name) > 100) {
+    //     throw new Exception('Visitor name must not exceed 100 characters');
+    // }
 
-    if (!empty($visitor_email)) {
-        if (!filter_var($visitor_email, FILTER_VALIDATE_EMAIL)) {
-            throw new Exception('Please provide a valid email address');
-        }
-        if (strlen($visitor_email) > 100) {
-            throw new Exception('Email must not exceed 100 characters');
-        }
-    }
+    // if (!empty($visitor_email)) {
+    //     if (!filter_var($visitor_email, FILTER_VALIDATE_EMAIL)) {
+    //         throw new Exception('Please provide a valid email address');
+    //     }
+    //     if (strlen($visitor_email) > 100) {
+    //         throw new Exception('Email must not exceed 100 characters');
+    //     }
+    // }
 
-    if (empty($visit_frequency)) {
-        throw new Exception('Visit frequency is required');
-    }
+    // if (empty($visit_frequency)) {
+    //     throw new Exception('Visit frequency is required');
+    // }
 
-    if (empty($purpose)) {
-        throw new Exception('Purpose is required');
-    }
+    // if (empty($purpose)) {
+    //     throw new Exception('Purpose is required');
+    // }
 
     // Get client IP address
     $ip_address = $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
