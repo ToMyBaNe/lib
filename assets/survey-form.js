@@ -387,6 +387,14 @@ class SurveyFormManager {
 
             try {
                 const formData = this.collectFormData(form);
+
+                // Basic email validation before sending
+                const email = formData.visitor_email || '';
+                if (email && !this.isValidEmail(email)) {
+                    this.showError('Please enter a valid email address.');
+                    return;
+                }
+
                 const response = await fetch('../api/submit.php', {
                     method: 'POST',
                     headers: {
@@ -540,6 +548,14 @@ class SurveyFormManager {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Simple email format validation
+     */
+    isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
     }
 }
 
