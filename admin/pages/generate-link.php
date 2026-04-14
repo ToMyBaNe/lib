@@ -67,7 +67,7 @@
                     Example:
                 </p>
                 <p class="font-mono text-sm mt-1">
-                    https://paarl.org.ph/ → http://localhost:3000/survey?data=aHR0cHM6Ly9wYWFybC5vcmcucGgv
+                    https://paarl.org.ph/ → https://lsms.basc.edu.ph/survey?data=aHR0cHM6Ly9wYWFybC5vcmcucGgv
                 </p>
             </div>
 
@@ -78,7 +78,7 @@
         function encodeBase64(){
             const input = document.getElementById("baseInput").value;
             const encoded = btoa(input);
-            const newLink = "http://localhost:3000/public?data=" + encoded;
+            const newLink = "https://lsms.basc.edu.ph/survey?data=" + encoded;
             document.getElementById("baseOutput").value = newLink;
         }
 
