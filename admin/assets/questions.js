@@ -59,7 +59,7 @@ function renderQuestions() {
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="editQuestion(${q.id})" class="btn btn-primary btn-sm">
+                    <button onclick="editQuestion(${q.id})" class="btn btn-primary btn-sm" ${q.is_locked ? 'disabled title="Locked questions cannot be edited"' : ''}>
                         <i class="fas fa-edit"></i>
                     </button>
                     <button onclick="openDeleteModal(${q.id})" class="btn btn-danger btn-sm" ${q.is_locked ? 'disabled title="Locked questions cannot be deleted"' : ''}>
@@ -179,6 +179,13 @@ async function editQuestion(id) {
         if (!data.success) throw new Error(data.message);
 
         const q = data.question;
+        
+        // Prevent editing locked questions
+        if (q.is_locked) {
+            showWarning('This question is locked and cannot be edited.');
+            return;
+        }
+        
         currentEditId = id;
 
         document.getElementById('questionId').value = id;
