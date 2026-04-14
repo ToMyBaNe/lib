@@ -274,8 +274,8 @@ function updateQuestion($id) {
     $is_required = isset($_POST['is_required']) ? 1 : 0;
     $is_locked = isset($_POST['is_locked']) ? 1 : 0;
     
-    // Get existing question to preserve is_active status
-    $getStmt = $conn->prepare("SELECT is_active FROM survey_questions WHERE id = ?");
+    // Get existing question to preserve is_active status and check if locked
+    $getStmt = $conn->prepare("SELECT is_active, is_locked FROM survey_questions WHERE id = ?");
     $getStmt->bind_param('i', $id);
     $getStmt->execute();
     $result = $getStmt->get_result();
@@ -285,6 +285,13 @@ function updateQuestion($id) {
     $existingQuestion = $result->fetch_assoc();
     $is_active = $existingQuestion['is_active']; // Preserve existing status
     $getStmt->close();
+    
+    // Check if question is locked - prevent editing
+    if (!empty($existingQuestion['is_locked'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'This question is locked and cannot be edited.']);
+        exit;
+    }
     
     // Get or create category ID from name
     $category_id = getOrCreateCategory($categoryName);
