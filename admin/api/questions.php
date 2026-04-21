@@ -49,6 +49,8 @@ try {
             updateQuestion($_GET['id'] ?? 0);
         } elseif ($action === 'reorder') {
             reorderQuestions();
+        } elseif ($action === 'toggleVisibility') {
+            toggleQuestionVisibility($_GET['id'] ?? 0);
         }
     } elseif ($method === 'DELETE') {
         deleteQuestion($_GET['id'] ?? 0);
@@ -393,5 +395,48 @@ function reorderQuestions() {
         'success' => true,
         'message' => 'Questions reordered successfully'
     ]);
+}
+
+/**
+ * Toggle question visibility (hide/show)
+ */
+function toggleQuestionVisibility($id) {
+    global $conn;
+    
+    $id = (int)$id;
+    if (!$id) {
+        throw new Exception('Question ID required');
+    }
+
+    // Get current visibility status
+    $check = $conn->prepare("SELECT is_active, is_locked FROM survey_questions WHERE id = ?");
+    $check->bind_param('i', $id);
+    $check->execute();
+    $row = $check->get_result()->fetch_assoc();
+    $check->close();
+
+    if (!$row) {
+        throw new Exception('Question not found');
+    }
+
+    // Toggle the is_active status
+    $newStatus = $row['is_active'] ? 0 : 1;
+    
+    $stmt = $conn->prepare("UPDATE survey_questions SET is_active = ? WHERE id = ?");
+    $stmt->bind_param('ii', $newStatus, $id);
+    
+    if (!$stmt->execute()) {
+        throw new Exception('Update failed: ' . $stmt->error);
+    }
+    
+    $statusText = $newStatus ? 'visible' : 'hidden';
+    
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Question is now ' . $statusText,
+        'is_active' => (bool)$newStatus
+    ]);
+    $stmt->close();
 }
 ?>

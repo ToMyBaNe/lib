@@ -56,9 +56,13 @@ function renderQuestions() {
                             ${index + 1}. ${escapeHtml(q.question)}
                         </h3>
                         ${q.is_locked ? `<span class="inline-flex items-center gap-1 rounded bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700"><i class="fas fa-lock"></i> Locked</span>` : ''}
+                        ${!q.is_active ? `<span class="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600"><i class="fas fa-eye-slash"></i> Hidden</span>` : '<span class="inline-flex items-center gap-1 rounded bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-700"><i class="fas fa-eye"></i> Visible</span>'}
                     </div>
                 </div>
                 <div class="flex gap-2">
+                    <button onclick="toggleQuestionVisibility(${q.id})" class="btn btn-secondary btn-sm" title="${q.is_active ? 'Hide question' : 'Show question'}">
+                        <i class="fas ${q.is_active ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                    </button>
                     <button onclick="editQuestion(${q.id})" class="btn btn-primary btn-sm" ${q.is_locked ? 'disabled title="Locked questions cannot be edited"' : ''}>
                         <i class="fas fa-edit"></i>
                     </button>
@@ -235,6 +239,31 @@ async function deleteQuestion(id) {
         await loadQuestions();
     } catch (error) {
         showError(error.message || 'Failed to delete question');
+    }
+}
+
+// Toggle question visibility (hide/show)
+async function toggleQuestionVisibility(id) {
+    try {
+        const response = await fetch(`/admin/api/questions.php?action=toggleVisibility&id=${id}`, {
+            method: 'POST'
+        });
+        
+        const text = await response.text();
+        let data;
+        
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error('Invalid server response');
+        }
+
+        if (!data.success) throw new Error(data.message);
+
+        showSuccess(data.message);
+        await loadQuestions();
+    } catch (error) {
+        showError(error.message || 'Failed to toggle question visibility');
     }
 }
 
